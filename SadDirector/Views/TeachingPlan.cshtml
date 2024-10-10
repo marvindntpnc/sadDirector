@@ -1,0 +1,930 @@
+@model TeachingPlanModel
+
+ <header>
+        <h1>Учебный план</h1>
+    </header>
+    <div class="card">
+        <div class="container">
+            <div class="accordion mt-5" id="PlanAccordion">
+                <div class="accordion-item" id="classes1-4">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#beginning-plan" aria-expanded="false" aria-controls="beginning-plan">
+                            Начальные классы
+                        </button>
+                    </h2>
+                    <div id="beginning-plan" class="accordion-collapse collapse" aria-labelledby="classes1-4" data-bs-parent="#PlanAccordion">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-4" id="beginners-required-subject-list">
+                                    Обязательные предметы
+                                </div>
+                                <div class="col-md-5" id="beginners-required-subjects">
+                                    <p>Математика, Русский язык, Физкультура</p>
+                                </div>
+                                <div class="col-md-5 hide" id="beginners-required-subject-input">
+                                    <select class="form-select teachers-multiple-select" id="beginners-required-subjects-select" data-placeholder="Choose anything" multiple>
+                                        <option selected>Русский язык</option>
+                                        <option selected>Математика</option>
+                                        <option>Информатика</option>
+                                        <option>Английский язык</option>
+                                        <option selected>Физкультура</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-12" id="editBeginnersSubjects" style="text-align: center">
+                                            <button class="btn btn-outline-secondary" onclick="editSubjectList('beginners')"><i class="fa-solid fa-pencil"></i> Изменить</button>
+                                        </div>
+                                        <div class="col-md-6 hide" id="saveBeginnersSubjects" style="text-align: end">
+                                            <button class="btn btn-outline-success" onclick="saveSubjectList('beginners')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        </div>
+                                        <div class="col-md-6 hide" id="cancelBeginnersSubjects">
+                                            <button class="btn btn-outline-danger" onclick="cancelSubjectList('beginners')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" style="text-align: center"> <!--id="addSubject"-->
+                                        <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#addSubjectModal">
+                                            <i class="fa-solid fa-plus"></i> Новый предмет
+                                        </button>
+                                    </div>
+                                    <div class="col-md-12" style="text-align: center"> <!--id="addSubject"-->
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudyClassModal" onclick="selectStudyLevel('beginner', 'addNewStudyClassBtn')">
+                                            <i class="fa-solid fa-plus"></i> Новый класс
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4" id="beginners-formed-subject-list">
+                                    Дополнительные предметы
+                                </div>
+                                <div class="col-md-5" id="beginners-formed-subjects">
+                                    <p>Математика</p>
+                                </div>
+                                <div class="col-md-5 hide" id="beginners-formed-subject-input">
+                                    <select class="form-select teachers-multiple-select" id="beginners-formed-subjects-select" data-placeholder="Choose anything" multiple>
+                                        <option>Русский язык</option>
+                                        <option selected>Математика</option>
+                                        <option>Информатика</option>
+                                        <option>Английский язык</option>
+                                        <option>Физкультура</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <table class="plan-table" id="beginners-plan-table">
+                                <tr>
+                                    <th scope="col">Учебный предмет</th>
+                                    @{
+                                        foreach (var studyClass in Model.StudyClasses)
+                                        {
+                                            <th class="study-class-name" data-class-id="@studyClass.Id" scope="col">
+                                                <button class="btn btn-danger hide" id="studyClass-@studyClass.Id" onclick="removeStudyClass('@studyClass.Id')"><i class="fa-solid fa-trash"></i></button><!--Удалять класс из таблицы доп. занятий (#extra-table) -->
+                                                <p id="study-class-@studyClass.Id">@studyClass.Name</p>
+                                            </th>
+                                        }
+                                    }
+                                    <th scope="col">Итого</th>
+                                    <th scope="col">Изменить</th>
+                                </tr>
+                                @*<tr>
+                                    <th scope="col" colspan="5">Обязательная часть</th><!--Динамический расчет количества колонок-->
+                                </tr>*@
+                                <tr>
+                                    <td>Русский язык</td>
+                                    <td data-required-subject-id="1">
+                                        <p class="current-beginners-required-subject-1" id="required-subject-1-1">5</p>
+                                        <input type="number" min="0" value="5" class="form-control beginners-required-subject-input-1 hide" id="required-subjectId-classId-1-1">
+                                    </td>
+                                    <td data-required-subject-id="1">
+                                        <p class="current-beginners-required-subject-1" id="required-subject-1-2">5</p>
+                                        <input type="number" min="0" value="5" class="form-control beginners-required-subject-input-1 hide" id="required-subjectId-classId-1-2">
+                                    </td>
+                                    <th>10</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-beginners-required-subject-1" onclick="editSubjectHours('1','beginners',true)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-beginners-required-subject-1" onclick="deleteSubject('1','beginners',true)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-beginners-required-subject-1" onclick="saveSubjectHours('1','beginners',true)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-beginners-required-subject-1" onclick="cancelSubjectHours('1','beginners',true)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Математика</td>
+                                    <td data-required-subject-id="2">
+                                        <p class="current-beginners-required-subject-2" id="required-subject-2-1">5</p>
+                                        <input type="number" min="0" value="5" class="form-control beginners-required-subject-input-2 hide" id="required-subjectId-classId-2-1">
+                                    </td>
+                                    <td data-required-subject-id="2">
+                                        <p class="current-beginners-required-subject-2" id="required-subject-2-2">5</p>
+                                        <input type="number" min="0" value="5" class="form-control beginners-required-subject-input-2 hide" id="required-subjectId-classId-2-2">
+                                    </td>
+                                    <th>10</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-beginners-required-subject-2" onclick="editSubjectHours('2','beginners',true)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-beginners-required-subject-2" onclick="deleteSubject('2','beginners',true)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-beginners-required-subject-2" onclick="saveSubjectHours('2','beginners',true)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-beginners-required-subject-2" onclick="cancelSubjectHours('2','beginners',true)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Физкультура</td>
+                                    <td data-required-subject-id="3">
+                                        <p class="current-beginners-required-subject-3" id="required-subject-3-1">5</p>
+                                        <input type="number" min="0" value="5" class="form-control beginners-required-subject-input-3 hide" id="required-subjectId-classId-3-1">
+                                    </td>
+                                    <td data-required-subject-id="3">
+                                        <p class="current-beginners-required-subject-3" id="required-subject-3-2">5</p>
+                                        <input type="number" min="0" value="5" class="form-control beginners-required-subject-input-3 hide" id="required-subjectId-classId-3-2">
+                                    </td>
+                                    <th>10</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-beginners-required-subject-3" onclick="editSubjectHours('3','beginners',true)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-beginners-required-subject-3" onclick="deleteSubject('3','beginners',true)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-beginners-required-subject-3" onclick="saveSubjectHours('3','beginners',true)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-beginners-required-subject-3" onclick="cancelSubjectHours('3','beginners',true)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Итого обязательной части</th>
+                                    <th>15</th>
+                                    <th>15</th>
+                                    <th>30</th>
+                                </tr>
+                                <tr>
+                                    <th scope="col" colspan="5">Формируемая часть</th><!--Динамический расчет количества колонок-->
+                                </tr>
+                                <tr>
+                                    <td>Математика</td>
+                                    <td data-formed-subject-id="2">
+                                        <p class="current-beginners-formed-subject-2" id="formed-subject-2-1">5</p>
+                                        <input type="number" min="0" value="5" class="form-control beginners-formed-subject-input-2 hide" id="formed-subjectId-classId-2-1">
+                                    </td>
+                                    <td data-required-subject-id="2">
+                                        <p class="current-beginners-formed-subject-2" id="formed-subject-2-2">5</p>
+                                        <input type="number" min="0" value="5" class="form-control beginners-formed-subject-input-2 hide" id="formed-subjectId-classId-2-2">
+                                    </td>
+                                    <th>10</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-beginners-formed-subject-2" onclick="editSubjectHours('2','beginners', false)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-beginners-formed-subject-2" onclick="deleteSubject('2','beginners', false)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-beginners-formed-subject-2" onclick="saveSubjectHours('2','beginners', false)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-beginners-formed-subject-2" onclick="cancelSubjectHours('2','beginners', false)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Итого формируемой части</th>
+                                    <th>5</th>
+                                    <th>5</th>
+                                    <th>10</th>
+                                </tr>
+                                <tr class="class-grand-total">
+                                    <th>Всего</th>
+                                    <th>20</th>
+                                    <th>20</th>
+                                    <th>40</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item" id="classes5-9">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#middle-plan" aria-expanded="false" aria-controls="middle-plan">
+                            Средние классы
+                        </button>
+                    </h2>
+                    <div id="middle-plan" class="accordion-collapse collapse" aria-labelledby="classes5-9" data-bs-parent="#PlanAccordion">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-4" id="middle-required-subject-list">
+                                    Изучаемые предметы
+                                </div>
+                                <div class="col-md-5" id="middle-required-subjects">
+                                    <p>Математика, Русский язык, Английский язык, Физкультура</p>
+                                </div>
+                                <div class="col-md-5 hide" id="middle-required-subject-input">
+                                    <select class="form-select teachers-multiple-select" id="middle-required-subjects-select" data-placeholder="Choose anything" multiple>
+                                        <option selected>Математика</option>
+                                        <option selected>Русский язык</option>
+                                        <option>Информатика</option>
+                                        <option selected>Английский язык</option>
+                                        <option selected>Физкультура</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-12" id="editMiddleSubjects" style="text-align: center">
+                                            <button class="btn btn-outline-secondary" onclick="editSubjectList('middle')"><i class="fa-solid fa-pencil"></i> Изменить</button>
+                                        </div>
+                                        <div class="col-md-6 hide" id="saveMiddleSubjects" style="text-align: end">
+                                            <button class="btn btn-outline-success" onclick="saveSubjectList('middle')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        </div>
+                                        <div class="col-md-6 hide" id="cancelMiddleSubjects">
+                                            <button class="btn btn-outline-danger" onclick="cancelSubjectList('middle')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" style="text-align: center"> <!--id="addSubject"-->
+                                        <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#addSubjectModal" onclick="selectStudyLevel('middle', 'addNewSubjectBtn')">
+                                            <i class="fa-solid fa-plus"></i> Новый предмет
+                                        </button>
+                                    </div>
+                                    <div class="col-md-12" style="text-align: center"> <!--id="addSubject"-->
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudyClassModal" onclick="selectStudyLevel('middle', 'addNewStudyClassBtn')">
+                                            <i class="fa-solid fa-plus"></i> Новый класс
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4" id="middle-formed-subject-list">
+                                    Формируемые предметы
+                                </div>
+                                <div class="col-md-5" id="middle-formed-subjects">
+                                    <p>Математика</p>
+                                </div>
+                                <div class="col-md-5 hide" id="middle-formed-subject-input">
+                                    <select class="form-select teachers-multiple-select" id="middle-formed-subjects-select" data-placeholder="Choose anything" multiple>
+                                        <option>Русский язык</option>
+                                        <option selected>Математика</option>
+                                        <option>Информатика</option>
+                                        <option>Английский язык</option>
+                                        <option>Физкультура</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <table class="plan-table" id="middle-plan-table">
+                                <tr>
+                                    <th scope="col">Учебный предмет</th>
+                                    <th class="study-class-name" data-class-id="3" scope="col">
+                                        <button class="btn btn-danger hide" id="studyClass3" onclick="removeStudyClass('3')"><i class="fa-solid fa-trash"></i></button>
+                                        <p id="study-class-3">5-Б</p>
+                                    </th>
+                                    <th class="study-class-name" data-class-id="4" scope="col">
+                                        <button class="btn btn-danger hide" id="studyClass4" onclick="removeStudyClass('4')"><i class="fa-solid fa-trash"></i></button>
+                                        <p id="study-class-4">9-Б</p>
+                                    </th>
+                                    <th scope="col">Итого</th>
+                                    <th scope="col">Изменить</th>
+                                </tr>
+                                <tr>
+                                    <th scope="col" colspan="5">Обязательная часть</th><!--Динамический расчет количества колонок-->
+                                </tr>
+                                <tr>
+                                    <td>Русский язык</td>
+                                    <td data-required-subject-id="1">
+                                        <p class="current-middle-required-subject-1" id="required-subject-1-3">5</p>
+                                        <input type="number" min="0" value="5" class="form-control middle-required-subject-input-1 hide" id="required-subjectId-classId-1-3">
+                                    </td>
+                                    <td data-required-subject-id="1">
+                                        <p class="current-middle-required-subject-1" id="required-subject-1-4">5</p>
+                                        <input type="number" min="0" value="5" class="form-control middle-required-subject-input-1 hide" id="required-subjectId-classId-1-4">
+                                    </td>
+                                    <th>10</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-middle-required-subject-1" onclick="editSubjectHours('1','middle',true)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-middle-required-subject-1" onclick="deleteSubject('1','middle',true)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-middle-required-subject-1" onclick="saveSubjectHours('1','middle',true)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-middle-required-subject-1" onclick="cancelSubjectHours('1','middle',true)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Математика</td>
+                                    <td data-required-subject-id="2">
+                                        <p class="current-middle-required-subject-2" id="required-subject-2-3">5</p>
+                                        <input type="number" min="0" value="5" class="form-control middle-required-subject-input-2 hide" id="required-subjectId-classId-2-3">
+                                    </td>
+                                    <td data-required-subject-id="2">
+                                        <p class="current-middle-required-subject-2" id="required-subject-2-4">5</p>
+                                        <input type="number" min="0" value="5" class="form-control middle-required-subject-input-2 hide" id="required-subjectId-classId-2-4">
+                                    </td>
+                                    <th>10</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-middle-required-subject-2" onclick="editSubjectHours('2','middle',true)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-middle-required-subject-2" onclick="deleteSubject('2','middle',true)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-middle-required-subject-2" onclick="saveSubjectHours('2','middle',true)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-middle-required-subject-2" onclick="cancelSubjectHours('2','middle',true)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Английский язык</td>
+                                    <td data-required-subject-id="4">
+                                        <p class="current-middle-required-subject-4" id="required-subject-4-3">5</p>
+                                        <input type="number" min="0" value="5" class="form-control middle-required-subject-input-4 hide" id="required-subjectId-classId-4-3">
+                                    </td>
+                                    <td data-required-subject-id="4">
+                                        <p class="current-middle-required-subject-4" id="required-subject-4-4">5</p>
+                                        <input type="number" min="0" value="5" class="form-control middle-required-subject-input-4 hide" id="required-subjectId-classId-4-4">
+                                    </td>
+                                    <th>10</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-middle-required-subject-4" onclick="editSubjectHours('4','middle',true)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-middle-required-subject-4" onclick="deleteSubject('4','middle',true)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-middle-required-subject-4" onclick="saveSubjectHours('4','middle',true)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-middle-required-subject-4" onclick="cancelSubjectHours('4','middle',true)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Физкультура</td>
+                                    <td data-required-subject-id="3">
+                                        <p class="current-middle-required-subject-3" id="required-subject-3-3">5</p>
+                                        <input type="number" min="0" value="5" class="form-control middle-required-subject-input-3 hide" id="required-subjectId-classId-3-3">
+                                    </td>
+                                    <td data-required-subject-id="3">
+                                        <p class="current-middle-required-subject-3" id="required-subject-3-4">5</p>
+                                        <input type="number" min="0" value="5" class="form-control middle-required-subject-input-3 hide" id="required-subjectId-classId-3-4">
+                                    </td>
+                                    <th>10</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-middle-required-subject-3" onclick="editSubjectHours('3','middle',true)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-middle-required-subject-3" onclick="deleteSubject('3','middle',true)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-middle-required-subject-3" onclick="saveSubjectHours('3','middle',true)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-middle-required-subject-3" onclick="cancelSubjectHours('3','middle',true)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Итого обязательной части</th>
+                                    <th>20</th>
+                                    <th>20</th>
+                                    <th>40</th>
+                                </tr>
+                                <tr>
+                                    <th scope="col" colspan="5">Формируемая часть</th><!--Динамический расчет количества колонок-->
+                                </tr>
+                                <tr>
+                                    <td>Математика</td>
+                                    <td data-formed-subject-id="2">
+                                        <p class="current-middle-formed-subject-2" id="formed-subject-2-3">5</p>
+                                        <input type="number" min="0" value="5" class="form-control middle-formed-subject-input-2 hide" id="formed-subjectId-classId-2-3">
+                                    </td>
+                                    <td data-formed-subject-id="2">
+                                        <p class="current-middle-formed-subject-2" id="formed-subject-2-4">5</p>
+                                        <input type="number" min="0" value="5" class="form-control middle-formed-subject-input-2 hide" id="formed-subjectId-classId-2-4">
+                                    </td>
+                                    <th>10</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-middle-formed-subject-2" onclick="editSubjectHours('2','middle', false)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-middle-formed-subject-2" onclick="deleteSubject('2','middle', false)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-middle-formed-subject-2" onclick="saveSubjectHours('2','middle', false)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-middle-formed-subject-2" onclick="cancelSubjectHours('2','middle', false)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Итого формируемой части</th>
+                                    <th>5</th>
+                                    <th>5</th>
+                                    <th>10</th>
+                                </tr>
+                                <tr class="class-grand-total">
+                                    <th>Всего</th>
+                                    <th>20</th>
+                                    <th>20</th>
+                                    <th>40</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item" id="classes10-11">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#high-plan" aria-expanded="false" aria-controls="high-plan">
+                            Старшие классы
+                        </button>
+                    </h2>
+                    <div id="high-plan" class="accordion-collapse collapse" aria-labelledby="classes10-11" data-bs-parent="#PlanAccordion">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-4" id="high-required-subject-list">
+                                    Изучаемые предметы
+                                </div>
+                                <div class="col-md-5" id="high-required-subjects">
+                                    <p>Математика, Русский язык, Английский язык, Информатика, Физкультура</p>
+                                </div>
+                                <div class="col-md-5 hide" id="high-required-subject-input">
+                                    <select class="form-select teachers-multiple-select" id="high-required-subjects-select" data-placeholder="Choose anything" multiple>
+                                        <option selected>Математика</option>
+                                        <option selected>Русский язык</option>
+                                        <option selected>Информатика</option>
+                                        <option selected>Английский язык</option>
+                                        <option selected>Физкультура</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-12" id="editHighSubjects" style="text-align: center">
+                                            <button class="btn btn-outline-secondary" onclick="editSubjectList('high')"><i class="fa-solid fa-pencil"></i> Изменить</button>
+                                        </div>
+                                        <div class="col-md-6 hide" id="saveHighSubjects" style="text-align: end">
+                                            <button class="btn btn-outline-success" onclick="saveSubjectList('high')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        </div>
+                                        <div class="col-md-6 hide" id="cancelHighSubjects">
+                                            <button class="btn btn-outline-danger" onclick="cancelSubjectList('high')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" style="text-align: center"> <!--id="addSubject"-->
+                                        <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#addSubjectModal" onclick="selectStudyLevel('high', 'addNewSubjectBtn')">
+                                            <i class="fa-solid fa-plus"></i> Новый предмет
+                                        </button>
+                                    </div>
+                                    <div class="col-md-12" style="text-align: center"> <!--id="addSubject"-->
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudyClassModal" onclick="selectStudyLevel('high', 'addNewStudyClassBtn')">
+                                            <i class="fa-solid fa-plus"></i> Новый класс
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4" id="high-formed-subject-list">
+                                    Формируемые предметы
+                                </div>
+                                <div class="col-md-5" id="high-formed-subjects">
+                                    <p>Математика</p>
+                                </div>
+                                <div class="col-md-5 hide" id="high-formed-subject-input">
+                                    <select class="form-select teachers-multiple-select" id="high-formed-subjects-select" data-placeholder="Choose anything" multiple>
+                                        <option>Русский язык</option>
+                                        <option selected>Математика</option>
+                                        <option>Информатика</option>
+                                        <option>Английский язык</option>
+                                        <option>Физкультура</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <table class="plan-table" id="high-plan-table">
+                                <tr>
+                                    <th scope="col">Учебный предмет</th>
+                                    <th class="study-class-name" data-class-id="5" scope="col">
+                                        <button class="btn btn-danger hide" id="studyClass5" onclick="removeStudyClass('5')"><i class="fa-solid fa-trash"></i></button>
+                                        <p id="study-class-5">11-В</p>
+                                    </th>
+                                    <th scope="col">Итого</th>
+                                    <th scope="col">Изменить</th>
+                                </tr>
+                                <tr>
+                                    <th scope="col" colspan="4">Обязательная часть</th><!--Динамический расчет количества колонок-->
+                                </tr>
+                                <tr>
+                                    <td>Русский язык</td>
+                                    <td data-required-subject-id="1">
+                                        <p class="current-high-required-subject-1" id="required-subject-1-5">5</p>
+                                        <input type="number" min="0" value="5" class="form-control high-required-subject-input-1 hide" id="required-subjectId-classId-1-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-high-required-subject-1" onclick="editSubjectHours('1','high',true)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-high-required-subject-1" onclick="deleteSubject('1','high',true)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-high-required-subject-1" onclick="saveSubjectHours('1','high',true)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-high-required-subject-1" onclick="cancelSubjectHours('1','high',true)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Математика</td>
+                                    <td data-required-subject-id="2">
+                                        <p class="current-high-required-subject-2" id="required-subject-2-5">5</p>
+                                        <input type="number" min="0" value="5" class="form-control high-required-subject-input-2 hide" id="required-subjectId-classId-2-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-high-required-subject-2" onclick="editSubjectHours('2','high',true)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-high-required-subject-2" onclick="deleteSubject('2','high',true)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-high-required-subject-2" onclick="saveSubjectHours('2','high',true)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-high-required-subject-2" onclick="cancelSubjectHours('2','high',true)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Английский язык</td>
+                                    <td data-required-subject-id="4">
+                                        <p class="current-high-required-subject-4" id="required-subject-4-5">5</p>
+                                        <input type="number" min="0" value="5" class="form-control high-required-subject-input-4 hide" id="required-subjectId-classId-4-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-high-required-subject-4" onclick="editSubjectHours('4','high',true)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-high-required-subject-4" onclick="deleteSubject('4','high',true)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-high-required-subject-4" onclick="saveSubjectHours('4','high',true)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-high-required-subject-4" onclick="cancelSubjectHours('4','high',true)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Информатика</td>
+                                    <td data-required-subject-id="5">
+                                        <p class="current-high-required-subject-5" id="required-subject-5-5">5</p>
+                                        <input type="number" min="0" value="5" class="form-control high-required-subject-input-5 hide" id="required-subjectId-classId-5-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-high-required-subject-5" onclick="editSubjectHours('5','high',true)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-high-required-subject-5" onclick="deleteSubject('5','high',true)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-high-required-subject-5" onclick="saveSubjectHours('5','high',true)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-high-required-subject-5" onclick="cancelSubjectHours('5','high',true)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Физкультура</td>
+                                    <td data-required-subject-id="3">
+                                        <p class="current-high-required-subject-3" id="required-subject-3-5">5</p>
+                                        <input type="number" min="0" value="5" class="form-control high-required-subject-input-3 hide" id="required-subjectId-classId-3-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-high-required-subject-3" onclick="editSubjectHours('3','high',true)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-high-required-subject-3" onclick="deleteSubject('3','high',true)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-high-required-subject-3" onclick="saveSubjectHours('3','high',true)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-high-required-subject-3" onclick="cancelSubjectHours('3','high',true)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Итого обязательной части</th>
+                                    <th>25</th>
+                                    <th>25</th>
+                                </tr>
+                                <tr>
+                                    <th scope="col" colspan="5">Формируемая часть</th><!--Динамический расчет количества колонок-->
+                                </tr>
+                                <tr>
+                                    <td>Математика</td>
+                                    <td data-formed-subject-id="2">
+                                        <p class="current-high-formed-subject-2" id="formed-subject-2-5">5</p>
+                                        <input type="number" min="0" value="5" class="form-control high-formed-subject-input-2 hide" id="formed-subjectId-classId-2-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-high-formed-subject-2" onclick="editSubjectHours('2','high', false)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-high-formed-subject-2" onclick="deleteSubject('2','high', false)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-high-formed-subject-2" onclick="saveSubjectHours('2','high', false)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-high-formed-subject-2" onclick="cancelSubjectHours('2','high', false)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Итого формируемой части</th>
+                                    <th>5</th>
+                                    <th>5</th>
+                                </tr>
+                                <tr class="class-grand-total">
+                                    <th>Всего</th>
+                                    <th>30</th>
+                                    <th>30</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item" id="extra-programs">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#extra" aria-expanded="false" aria-controls="extra">
+                            Внеурочная деятельность
+                        </button>
+                    </h2>
+                    <div id="extra" class="accordion-collapse collapse" aria-labelledby="extra-programs" data-bs-parent="#PlanAccordion">
+                        <div class="col-md-12" style="text-align: center"> <!--id="addSubject"-->
+                            <button type="button" class="btn btn-outline-info" onclick="addNewExtraSubject()">
+                                <i class="fa-solid fa-plus"></i> Новая программа
+                            </button>
+                        </div>
+                            <table class="plan-table" id="extra-table">
+                                <tr>
+                                    <th scope="col">Полное название</th>
+                                    <th scope="col">Короткое название</th>
+                                    <th data-class-id="1" scope="col">1-Б</th>
+                                    <th data-class-id="2" scope="col">2-Б</th>
+                                    <th data-class-id="3" scope="col">5-Б</th>
+                                    <th data-class-id="4" scope="col">9-А</th>
+                                    <th data-class-id="5" scope="col">11-В</th>
+                                    <th scope="col">Итого</th>
+                                    <th scope="col">Изменить</th>
+                                </tr>
+                                <tr>
+                                    <td>И мы будем делать все, что мы захотим, пока вы не угробили весь этот мир</td>
+                                    <td>Кино-Мы хотим танцевать</td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-1" id="extra-subject-1-1">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-1 hide" id="extra-subjectId-classId-1-1">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-1" id="extra-subject-1-2">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-1 hide" id="extra-subjectId-classId-1-2">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-1" id="extra-subject-1-3">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-1 hide" id="extra-subjectId-classId-1-3">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-1" id="extra-subject-1-4">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-1 hide" id="extra-subjectId-classId-1-4">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-1" id="extra-subject-1-5">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-1 hide" id="extra-subjectId-classId-1-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-extra-subject-1" onclick="editExtraSubjectHours('1')"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-extra-subject-1" onclick="deleteExtraSubject('1')"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-extra-subject-1" onclick="saveExtraSubject('1')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-extra-subject-1" onclick="cancelExtraSubject('1')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Нам пора отпустить синиц, нам пора ловить журавлей</td>
+                                    <td>Дайте танк(!)- Спам</td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-2" id="extra-subject-2-1">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-2 hide" id="extra-subjectId-classId-2-1">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-2" id="extra-subject-2-2">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-2 hide" id="extra-subjectId-classId-2-2">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-2" id="extra-subject-2-3">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-2 hide" id="extra-subjectId-classId-2-3">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-2" id="extra-subject-2-4">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-2 hide" id="extra-subjectId-classId-2-4">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-2" id="extra-subject-2-5">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-2 hide" id="extra-subjectId-classId-2-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-extra-subject-2" onclick="editExtraSubjectHours('2')"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-extra-subject-2" onclick="deleteExtraSubject('2')"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-extra-subject-2" onclick="saveExtraSubject('2')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-extra-subject-2" onclick="cancelExtraSubject('2')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Слишком далеко чтоб дотянуться, слишком низко чтобы встать</td>
+                                    <td>Гражданская оборона-Нечего терять</td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-3" id="extra-subject-3-1">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-3 hide" id="extra-subjectId-classId-3-1">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-3" id="extra-subject-3-2">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-3 hide" id="extra-subjectId-classId-3-2">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-3" id="extra-subject-3-3">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-3 hide" id="extra-subjectId-classId-3-3">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-3" id="extra-subject-3-4">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-3 hide" id="extra-subjectId-classId-3-4">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-3" id="extra-subject-3-5">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-3 hide" id="extra-subjectId-classId-3-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-extra-subject-3" onclick="editExtraSubjectHours('3')"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-extra-subject-3" onclick="deleteExtraSubject('3')"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-extra-subject-3" onclick="saveExtraSubject('3')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-extra-subject-3" onclick="cancelExtraSubject('3')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Моё время вышло, моя эпоха сдохла. Но у меня есть iPod и мне не так уж плохо</td>
+                                    <td>Anacondaz-Поколение</td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-4" id="extra-subject-4-1">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-4 hide" id="extra-subjectId-classId-4-1">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-4" id="extra-subject-4-2">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-4 hide" id="extra-subjectId-classId-4-2">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-4" id="extra-subject-4-3">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-4 hide" id="extra-subjectId-classId-4-3">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-4" id="extra-subject-4-4">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-4 hide" id="extra-subjectId-classId-4-4">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-4" id="extra-subject-4-5">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-4 hide" id="extra-subjectId-classId-4-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-extra-subject-4" onclick="editExtraSubjectHours('4')"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-extra-subject-4" onclick="deleteExtraSubject('4')"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-extra-subject-4" onclick="saveExtraSubject('4')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-extra-subject-4" onclick="cancelExtraSubject('4')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Well this life that, I've been living ain't to easy on the soul. Sometimes you've gotta give in and let that whiskey flow.</td>
+                                    <td>Tejon Street Corner Thieves-Whiskey</td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-5" id="extra-subject-5-1">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-5 hide" id="extra-subjectId-classId-5-1">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-5" id="extra-subject-5-2">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-5 hide" id="extra-subjectId-classId-5-2">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-5" id="extra-subject-5-3">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-5 hide" id="extra-subjectId-classId-5-3">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-5" id="extra-subject-5-4">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-5 hide" id="extra-subjectId-classId-5-4">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-5" id="extra-subject-5-5">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-5 hide" id="extra-subjectId-classId-5-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-extra-subject-5" onclick="editExtraSubjectHours('5')"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-extra-subject-5" onclick="deleteExtraSubject('5')"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-extra-subject-5" onclick="saveExtraSubject('5')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-extra-subject-5" onclick="cancelExtraSubject('5')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>I tried so hard and got so far. But in the end, it doesn't even matter</td>
+                                    <td>Linkin Park - In the End</td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-6" id="extra-subject-6-1">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-6 hide" id="extra-subjectId-classId-6-1">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-6" id="extra-subject-6-2">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-6 hide" id="extra-subjectId-classId-6-2">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-6" id="extra-subject-6-3">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-6 hide" id="extra-subjectId-classId-6-3">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-6" id="extra-subject-6-4">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-6 hide" id="extra-subjectId-classId-6-4">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-6" id="extra-subject-6-5">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-6 hide" id="extra-subjectId-classId-6-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-extra-subject-6" onclick="editExtraSubjectHours('6')"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-extra-subject-6" onclick="deleteExtraSubject('6')"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-extra-subject-6" onclick="saveExtraSubject('6')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-extra-subject-6" onclick="cancelExtraSubject('6')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Думай позитивно: стакан всегда наполовину полон, всегда. Чувствуй хорошее, плохого не существует. Между "нет" и "да" выбор только "да"</td>
+                                    <td>Кровосток - Думай позитивно</td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-7" id="extra-subject-7-1">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-7 hide" id="extra-subjectId-classId-7-1">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-7" id="extra-subject-7-2">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-7 hide" id="extra-subjectId-classId-7-2">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-7" id="extra-subject-7-3">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-7 hide" id="extra-subjectId-classId-7-3">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-7" id="extra-subject-7-4">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-7 hide" id="extra-subjectId-classId-7-4">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-7" id="extra-subject-7-5">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-7 hide" id="extra-subjectId-classId-7-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-extra-subject-7" onclick="editExtraSubjectHours('7')"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-extra-subject-7" onclick="deleteExtraSubject('7')"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-extra-subject-7" onclick="saveExtraSubject('7')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-extra-subject-7" onclick="cancelExtraSubject('7')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>And I think my spaceship knows which way to go. Tell my wife I love her very much (she knows)</td>
+                                    <td>David Bowie - Space Oddity</td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-8" id="extra-subject-8-1">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-8 hide" id="extra-subjectId-classId-8-1">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-8" id="extra-subject-8-2">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-8 hide" id="extra-subjectId-classId-8-2">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-8" id="extra-subject-8-3">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-8 hide" id="extra-subjectId-classId-8-3">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-8" id="extra-subject-8-4">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-8 hide" id="extra-subjectId-classId-8-4">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-8" id="extra-subject-8-5">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-8 hide" id="extra-subjectId-classId-8-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-extra-subject-8" onclick="editExtraSubjectHours('8')"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-extra-subject-8" onclick="deleteExtraSubject('8')"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-extra-subject-8" onclick="saveExtraSubject('8')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-extra-subject-8" onclick="cancelExtraSubject('8')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>But I spent the day in bed.Pillows like pillars.Life ends in death.So, there's nothing wrong with being good to yourself</td>
+                                    <td>Morrissey-Spent the Day in Bed</td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-9" id="extra-subject-9-1">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-9 hide" id="extra-subjectId-classId-9-1">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-9" id="extra-subject-9-2">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-9 hide" id="extra-subjectId-classId-9-2">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-9" id="extra-subject-9-3">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-9 hide" id="extra-subjectId-classId-9-3">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-9" id="extra-subject-9-4">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-9 hide" id="extra-subjectId-classId-9-4">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-9" id="extra-subject-9-5">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-9 hide" id="extra-subjectId-classId-9-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-extra-subject-9" onclick="editExtraSubjectHours('9')"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-extra-subject-9" onclick="deleteExtraSubject('9')"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-extra-subject-9" onclick="saveExtraSubject('9')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-extra-subject-9" onclick="cancelExtraSubject('9')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Red, will I go unfed? Will I be that fool who rushes on to where angels fear to tread</td>
+                                    <td>Red Hot Chili Peppers - Catch My Death</td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-10" id="extra-subject-10-1">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-10 hide" id="extra-subjectId-classId-10-1">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-10" id="extra-subject-10-2">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-10 hide" id="extra-subjectId-classId-10-2">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-10" id="extra-subject-10-3">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-10 hide" id="extra-subjectId-classId-10-3">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-10" id="extra-subject-10-4">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-10 hide" id="extra-subjectId-classId-10-4">
+                                    </td>
+                                    <td data-extra-subject-id="1">
+                                        <p class="current-extra-subject-10" id="extra-subject-10-5">1</p>
+                                        <input type="number" min="0" value="1" class="form-control extra-subject-input-10 hide" id="extra-subjectId-classId-10-5">
+                                    </td>
+                                    <th>5</th>
+                                    <td><button class="btn btn-outline-secondary" id="edit-extra-subject-10" onclick="editExtraSubjectHours('10')"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                        <button class="btn btn-danger delete-teacher-info-btn" id="delete-extra-subject-10" onclick="deleteExtraSubject('10')"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                        <button class="btn btn-outline-success hide" id="save-extra-subject-10" onclick="saveExtraSubject('10')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                        <button class="btn btn-outline-danger hide" id="cancel-extra-subject-10" onclick="cancelExtraSubject('10')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                                    </td>
+                                </tr>
+                                <tr class="class-grand-total">
+                                    <th colspan="2">Всего</th>
+                                    <th>10</th>
+                                    <th>10</th>
+                                    <th>10</th>
+                                    <th>10</th>
+                                    <th>10</th>
+                                    <th>50</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+            </div>
+            <div class="add-button">
+                <a asp-action="CreateOrUpdateTariff" asp-route-tariffId="@Model.TariffId" id="save-teachers-info" class="btn btn-outline-danger"><i class="fa-solid fa-arrow-left"></i> Назад</a>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="addSubjectModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 500px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Введите название предмета</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" value="" class="form-control" id="addSubjectInput">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="addNewSubject()"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addStudyClassModal" tabindex="-1" aria-labelledby="studyClassModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 500px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="studyClassModalLabel">Введите номер класса</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" value="" class="form-control" id="addStudyClassInput">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="addNewStudyClassBtn"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>

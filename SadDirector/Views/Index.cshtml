@@ -1,0 +1,45 @@
+﻿@model SadDirector.Models.Lists.TariffListModel
+@{
+    ViewData["Title"] = "Список Тарфикаций";
+}
+
+<header>
+    <h1>@ViewData["Title"]</h1>
+</header>
+<div class="card">
+    <div class="container">
+        <div class="tariffication-list">
+            <div class="add-button">
+                <a asp-action="AddTariff" id="add-new-tariffication" class="btn btn-outline-primary"><i class="fa fa-plus"></i> Добавить</a>
+            </div>
+            <table class="editable-list">
+                <tr>
+                    <th>Номер</th>
+                    <th>Период</th>
+                    <th>Название</th>
+                    <th>Изменить</th>
+                </tr>
+                @{
+                    foreach (var tariffModel in Model.TariffList)
+                    {
+                        <tr>
+                            <td>@tariffModel.Id</td>
+                            <td>@tariffModel.Name</td>
+                            <td>@tariffModel.Period</td>
+                            <td>
+                                <a asp-action="CreateOrUpdateTariff" asp-route-tariffId="@tariffModel.Id" class="btn btn-outline-secondary"><i class="fa-solid fa-pencil"></i> Изменить</a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </table>
+            @* <div class="table-pagination"> *@
+            @*     <button class="pagination-btn next-page" id="next-page-mail-list">&gt;</button> *@
+            @*     <p class="pagination-text page-count">10</p> *@
+            @*     <p class="pagination-text"> from </p> *@
+            @*     <p class="pagination-text current-page">1</p> *@
+            @*     <button class="pagination-btn prev-page" id="prev-page-main-list"><</button> *@
+            @* </div> *@
+        </div>
+    </div>
+</div>

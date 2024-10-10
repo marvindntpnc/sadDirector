@@ -1,0 +1,97 @@
+@model TeacherHoursModel
+<header>
+            <h1>Марков Станислав Юрьевич</h1>
+        </header>
+        <div class="card">
+            <div class="container">
+                <table class="plan-table class-info-table">
+                    <tr>
+                        <th rowspan="2">Предмет</th>
+                        <th colspan="2">1-Б</th>
+                        <th colspan="2">2-Б</th>
+                        <th colspan="2">5-Б</th>
+                        <th colspan="2">9-А</th>
+                        <th colspan="2">11-В</th>
+                        <th rowspan="2">Итого</th>
+                    </tr>
+                    <tr>
+                        <th>Часы</th>
+                        <th>Остаток по плану</th>
+                        <th>Часы</th>
+                        <th>Остаток по плану</th>
+                        <th>Часы</th>
+                        <th>Остаток по плану</th>
+                        <th>Часы</th>
+                        <th>Остаток по плану</th>
+                        <th>Часы</th>
+                        <th>Остаток по плану</th>
+                    </tr>
+                    <tr>
+                        <td>Английский язык</td>
+                        <td>
+                            <input type="number" min="0" value="0" class="form-control" id="teacher-subject-class-1-4-1" onchange="calculateHoursRemains('1','4','1')">
+                        </td>
+                        <td data-plan-value="0" id="remains-subject-class-4-1">0</td>
+                        <td>
+                            <input type="number" min="0" value="0" class="form-control" id="teacher-subject-class-1-4-2" onchange="calculateHoursRemains('1','4','2')">
+                        </td>
+                        <td data-plan-value="0" id="remains-subject-class-4-2">0</td>
+                        <td>
+                            <input type="number" min="0" value="5" class="form-control" id="teacher-subject-class-1-4-3" onchange="calculateHoursRemains('1','4','3')">
+                        </td>
+                        <td data-plan-value="5" id="remains-subject-class-4-3">0</td>
+                        <td>
+                            <input type="number" min="0" value="5" class="form-control" id="teacher-subject-class-1-4-4" onchange="calculateHoursRemains('1','4','4')">
+                        </td>
+                        <td data-plan-value="5" id="remains-subject-class-4-4">0</td>
+                        <td>
+                            <input type="number" min="0" value="5" class="form-control" id="teacher-subject-class-1-4-5" onchange="calculateHoursRemains('1','4','5')">
+                        </td>
+                        <td data-plan-value="5" id="remains-subject-class-4-5">0</td>
+                        <th>15</th>
+                    </tr>
+                    <tr>
+                        <td>Информатика</td>
+                        <td>
+                            <input type="number" min="0" value="0" class="form-control" id="teacher-subject-class-1-5-1" onchange="calculateHoursRemains('1','5','1')">
+                        </td>
+                        <td data-plan-value="0" id="remains-subject-class-5-1">0</td>
+                        <td>
+                            <input type="number" min="0" value="0" class="form-control" id="teacher-subject-class-1-5-2" onchange="calculateHoursRemains('1','5','2')">
+                        </td>
+                        <td data-plan-value="0" id="remains-subject-class-5-2">0</td>
+                        <td>
+                            <input type="number" min="0" value="0" class="form-control" id="teacher-subject-class-1-5-3" onchange="calculateHoursRemains('1','5','3')">
+                        </td>
+                        <td data-plan-value="0" id="remains-subject-class-5-3">0</td>
+                        <td>
+                            <input type="number" min="0" value="0" class="form-control" id="teacher-subject-class-1-5-4" onchange="calculateHoursRemains('1','5','4')">
+                        </td>
+                        <td data-plan-value="0" id="remains-subject-class-5-4">0</td>
+                        <td>
+                            <input type="number" min="0" value="5" class="form-control" id="teacher-subject-class-1-5-5" onchange="calculateHoursRemains('1','5','5')">
+                        </td>
+                        <td data-plan-value="5" id="remains-subject-class-5-5">0</td>
+                        <th>5</th>
+                    </tr>
+                    <tr>
+                        <th>Всего</th>
+                        <th>0</th>
+                        <th>0</th>
+                        <th>0</th>
+                        <th>0</th>
+                        <th>5</th>
+                        <th>0</th>
+                        <th>5</th>
+                        <th>0</th>
+                        <th>10</th>
+                        <th>0</th>
+                        <th>20</th>
+                    </tr>
+                </table>
+                <div class="add-button">
+                    <a href="CreateEditTariff.html" id="save-teachers-info" class="btn btn-outline-danger"><i class="fa-solid fa-arrow-left"></i> Назад</a>
+                    <button type="button" class="btn btn-outline-success" id="saveTeacherHoursInfo"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                </div>
+            </div>
+        </div>
