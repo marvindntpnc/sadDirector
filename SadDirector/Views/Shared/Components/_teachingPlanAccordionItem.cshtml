@@ -1,0 +1,247 @@
+@using System.Text
+@using SadDirector.Domain
+@model StudyLevelModel
+@{
+    string studyClassLevel = "beginners";
+    string accordionItemId = "classes1-4";
+    string accordionItemTitle = "Начальные классы";
+    switch (Model.StudyLevel)
+    {
+        case StudyClassLevel.Middle:
+            studyClassLevel = "middle";
+            accordionItemId = "classes5-9";
+            accordionItemTitle = "Средние классы";
+            break;
+        case StudyClassLevel.High:
+            studyClassLevel = "high";
+            accordionItemId = "classes10-11";
+            accordionItemTitle = "Старшие классы";
+            break;
+    }
+    string editStudyLevelUpper = $"edit{Char.ToUpper(studyClassLevel[0]) + studyClassLevel.Substring(1)}Subjects";
+    string saveStudyLevelUpper=$"save{Char.ToUpper(studyClassLevel[0]) + studyClassLevel.Substring(1)}Subjects";
+    string cancelStudyLevelUpper=$"cancel{Char.ToUpper(studyClassLevel[0]) + studyClassLevel.Substring(1)}Subjects";
+}
+<div class="accordion-item" id="@accordionItemId">
+    <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@studyClassLevel-plan" aria-expanded="false" aria-controls="@studyClassLevel-plan">
+            @accordionItemTitle
+        </button>
+    </h2>
+    <div id="@studyClassLevel-plan" class="accordion-collapse collapse" aria-labelledby="@accordionItemId" data-bs-parent="#PlanAccordion">
+        <div class="accordion-body">
+            <div class="row">
+                <div class="col-md-4" id="@studyClassLevel-required-subject-list">
+                    Обязательные предметы
+                </div>
+                <div class="col-md-5" id="@studyClassLevel-required-subjects">
+                    @{
+                        var currentRequiredSubjectsNames = new List<string>();
+                        foreach (var subject in Model.RequiredSubjects.Where(rs=>rs.Selected))
+                        {
+                            currentRequiredSubjectsNames.Add(subject.Text);
+                        }
+                        var currentRequiredSubjects = String.Join(" ,",currentRequiredSubjectsNames );
+                    }
+                    <p>@currentRequiredSubjects</p>
+                </div>
+                <div class="col-md-5 hide" id="@studyClassLevel-required-subject-input">
+                    <select class="form-select teachers-multiple-select" id="@studyClassLevel-required-subjects-select" data-placeholder="Choose anything" multiple>
+                        @{
+                            foreach (var requiredSubject in Model.RequiredSubjects)
+                            {
+                                <option selected="@requiredSubject.Selected" value="@requiredSubject.Value">@requiredSubject.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-12" id="@editStudyLevelUpper" style="text-align: center">
+                            <button class="btn btn-outline-secondary" onclick="editSubjectList('@studyClassLevel')"><i class="fa-solid fa-pencil"></i> Изменить</button>
+                        </div>
+                        <div class="col-md-6 hide" id="@saveStudyLevelUpper" style="text-align: end">
+                            <button class="btn btn-outline-success" onclick="saveSubjectList('@studyClassLevel')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                        </div>
+                        <div class="col-md-6 hide" id="@cancelStudyLevelUpper">
+                            <button class="btn btn-outline-danger" onclick="cancelSubjectList('@studyClassLevel')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                        </div>
+                    </div>
+                    <div class="col-md-12" style="text-align: center"> <!--id="addSubject"-->
+                        <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#addSubjectModal">
+                            <i class="fa-solid fa-plus"></i> Новый предмет
+                        </button>
+                    </div>
+                    <div class="col-md-12" style="text-align: center"> <!--id="addSubject"-->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudyClassModal" onclick="selectStudyLevel('@studyClassLevel', 'addNewStudyClassBtn')">
+                            <i class="fa-solid fa-plus"></i> Новый класс
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4" id="@studyClassLevel-formed-subject-list">
+                    Формируемая часть
+                </div>
+                <div class="col-md-5" id="@studyClassLevel-formed-subjects">
+                    @{
+                        var currentFormedSubjectsNames = new List<string>();
+                        foreach (var subject in Model.FormedSubjects.Where(fs => fs.Selected))
+                        {
+                            currentFormedSubjectsNames.Add(subject.Text);
+                        }
+
+                        var currentFormedSubjects = String.Join(" ,", currentFormedSubjectsNames);
+                    }
+                    <p>@currentFormedSubjects</p>
+                </div>
+                <div class="col-md-5 hide" id="@studyClassLevel-formed-subject-input">
+                    <select class="form-select teachers-multiple-select" id="@studyClassLevel-formed-subjects-select" data-placeholder="Choose anything" multiple>
+                        @{
+                            foreach (var formedSubject in Model.FormedSubjects)
+                            {
+                                <option selected="@formedSubject.Selected" value="@formedSubject.Value">@formedSubject.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <table class="plan-table" id="@studyClassLevel-plan-table">
+                @{
+                    var requiredTotalBySubjects = 0;
+                    var formedTotalBySubjects = 0;
+                    var colspan = Model.StudyClassList.Count + 3;
+
+                    <tr id="@studyClassLevel-header-row">
+                        <th scope="col">Учебный предмет</th>
+                        @foreach (var studyClass in Model.StudyClassList)
+                        {
+                            <th class="study-class-name" data-class-id="@studyClass.Id" scope="col">
+                                <button class="btn btn-danger hide" id="studyClass-@studyClass.Id" onclick="removeStudyClass('@studyClass.Id')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button><!--Удалять класс из таблицы доп. занятий (#extra-table) -->
+                                <p id="study-class-@studyClass.Id">@studyClass.Name</p>
+                            </th>
+                        }
+                        <th scope="col">Итого</th>
+                        <th scope="col">Изменить / Удалить</th>
+                    </tr>
+                    <tr>
+                        <th scope="col" colspan="@colspan">Обязательная часть</th>
+                    </tr>
+
+                    foreach (var subject in Model.RequiredSubjectList)
+                    {
+                        requiredTotalBySubjects += subject.SubjectHoursTotal;
+                        <tr class="subject-row">
+                            <td data-subject-id="@subject.Id" id="subject-@subject.Id-program">@subject.Name</td>
+                            @{
+                                foreach (var studyClass in Model.StudyClassList)
+                                {
+                                    var currentHours = Model.RequiredSubjectProgramModel.FirstOrDefault(ch => ch.SubjectId == subject.Id && ch.StudyClassId == studyClass.Id).Hours;
+                                    <td class="subject-plan-cell" data-required-subject-id="@subject.Id">
+                                        <p class="current-@studyClassLevel-required-subject-@subject.Id" id="required-subject-@subject.Id-@studyClass.Id">@currentHours</p>
+                                        <input type="number" min="0" value="@currentHours" class="form-control @studyClassLevel-required-subject-input-@subject.Id hide" id="required-subjectId-classId-@subject.Id-@studyClass.Id">
+                                    </td>
+                                }
+                            }
+                            <th id="@studyClassLevel-subject-@subject.Id-total">@subject.SubjectHoursTotal</th>
+                            <td><button class="btn btn-outline-secondary" id="edit-@studyClassLevel-required-subject-@subject.Id" onclick="editSubjectHours('@subject.Id','@studyClassLevel',true)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                <button class="btn btn-danger delete-teacher-info-btn" id="delete-@studyClassLevel-required-subject-@subject.Id" onclick="deleteSubjectProgram('@subject.Id','@studyClassLevel',true)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                <button class="btn btn-outline-success hide" id="save-@studyClassLevel-required-subject-@subject.Id" onclick="saveSubjectHours('@subject.Id','@studyClassLevel',true)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                <button class="btn btn-outline-danger hide" id="cancel-@studyClassLevel-required-subject-@subject.Id" onclick="cancelSubjectHours('@subject.Id','@studyClassLevel',true)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                <tr>
+                    <th>Итого обязательной части</th>
+                    @{
+                        var requiredTotalByClasses = 0;
+                        var requiredTotal = 0;
+                        foreach (var studyClass in Model.StudyClassList)
+                        {
+                            <th>@studyClass.TotalRequiredHours</th>
+                            requiredTotalByClasses += studyClass.TotalRequiredHours;
+                        }
+
+                        if (requiredTotalBySubjects == requiredTotalByClasses)
+                            requiredTotal = requiredTotalBySubjects;
+                    }
+                    <th>@requiredTotal</th>
+                </tr>
+                <tr>
+                    <th scope="col" colspan="@colspan">Формируемая часть</th>
+                </tr>
+                @{
+                    foreach (var subject in Model.FormedSubjectList)
+                    {
+                        formedTotalBySubjects += subject.SubjectHoursTotal;
+                        <tr class="subject-row">
+                            <td data-subject-id="@subject.Id" id="subject-@subject.Id-program">@subject.Name</td>
+                            @{
+                                foreach (var studyClass in Model.StudyClassList)
+                                {
+                                    var currentHours = Model.FormedSubjectProgramModel.FirstOrDefault(ch => ch.SubjectId == subject.Id && ch.StudyClassId == studyClass.Id)?.Hours;
+                                    <td class="subject-plan-cell" data-required-subject-id="@subject.Id">
+                                        <p class="current-@studyClassLevel-formed-subject-@subject.Id" id="formed-subject-@subject.Id-@studyClass.Id">@currentHours</p>
+                                        <input type="number" min="0" value="@currentHours" class="form-control @studyClassLevel-formed-subject-input-@subject.Id hide" id="formed-subjectId-classId-@subject.Id-@studyClass.Id">
+                                    </td>
+                                }
+                            }
+                            <th id="@studyClassLevel-subject-@subject.Id-total">@subject.SubjectHoursTotal</th>
+                            <td>
+                                <button class="btn btn-outline-secondary" id="edit-@studyClassLevel-formed-subject-@subject.Id" onclick="editSubjectHours('@subject.Id','@studyClassLevel',false)"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                                <button class="btn btn-danger delete-teacher-info-btn" id="delete-@studyClassLevel-formed-subject-@subject.Id" onclick="deleteSubjectProgram('@subject.Id','@studyClassLevel',false)"><i class="fa-solid fa-trash"></i> Удалить</button>
+                                <button class="btn btn-outline-success hide" id="save-@studyClassLevel-formed-subject-@subject.Id" onclick="saveSubjectHours('@subject.Id','@studyClassLevel',false)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                                <button class="btn btn-outline-danger hide" id="cancel-@studyClassLevel-formed-subject-@subject.Id" onclick="cancelSubjectHours('@subject.Id','@studyClassLevel',false)"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                @* <tr> *@
+                @*     <td>Математика</td> *@
+                @*     <td data-formed-subject-id="2"> *@
+                @*         <p class="current-beginners-formed-subject-2" id="formed-subject-2-1">5</p> *@
+                @*         <input type="number" min="0" value="5" class="form-control beginners-formed-subject-input-2 hide" id="formed-subjectId-classId-2-1"> *@
+                @*     </td> *@
+                @*     <th>10</th> *@
+                @*     <td><button class="btn btn-outline-secondary" id="edit-beginners-formed-subject-2" onclick="editSubjectHours('2','beginners', false)"><i class="fa-solid fa-pencil"></i>Изменить</button> *@
+                @*         <button class="btn btn-danger delete-teacher-info-btn" id="delete-beginners-formed-subject-2" onclick="deleteSubjectProgram('2','beginners', false)"><i class="fa-solid fa-trash"></i> Удалить</button> *@
+                @*         <button class="btn btn-outline-success hide" id="save-beginners-formed-subject-2" onclick="saveSubjectHours('2','beginners', false)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button> *@
+                @*         <button class="btn btn-outline-danger hide" id="cancel-beginners-formed-subject-2" onclick="cancelSubjectHours('2','beginners', false)"><i class="fa-solid fa-xmark"></i> Отменить</button> *@
+                @*     </td> *@
+                @* </tr> *@
+                <tr>
+                    <th>Итого формируемой части</th>
+                    @{
+                        var formedTotalByClasses = 0;
+                        var formedTotal = 0;
+                        foreach (var studyClass in Model.StudyClassList)
+                        {
+                            <th>@studyClass.TotalFormedHours</th>
+                            formedTotalByClasses += studyClass.TotalFormedHours;
+                        }
+
+                        if (formedTotalBySubjects == formedTotalByClasses)
+                            formedTotal = formedTotalBySubjects;
+                    }
+                    <th>@formedTotal</th>
+                </tr>
+                <tr class="class-grand-total">
+                    <th>Всего</th>
+                    @{
+                        var grandTotal = 0;
+                        foreach (var studyClass in Model.StudyClassList)
+                        {
+                            var studyClassTotal = studyClass.TotalFormedHours + studyClass.TotalRequiredHours;
+                            <th>@studyClassTotal</th>
+                            grandTotal += studyClassTotal;
+                        }
+                    }
+                    <th>@grandTotal</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

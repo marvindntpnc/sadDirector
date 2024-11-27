@@ -1,0 +1,78 @@
+@model ExtraProgramModel
+
+<div class="accordion-item" id="extra-programs">
+    <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#extra" aria-expanded="false" aria-controls="extra">
+            Внеурочная деятельность
+        </button>
+    </h2>
+    <div id="extra" class="accordion-collapse collapse" aria-labelledby="extra-programs" data-bs-parent="#PlanAccordion">
+        <div class="col-md-12" style="text-align: center">
+
+            <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#addExtraSubjectModal">
+                <i class="fa-solid fa-plus"></i> Новая программа
+            </button>
+        </div>
+        <table class="plan-table" id="extra-table">
+            <tr>
+                <th scope="col">Полное название</th>
+                <th scope="col">Короткое название</th>
+                @foreach (var studyClass in Model.StudyClasses)
+                {
+                    <th class="study-class-name" data-class-id="@studyClass.Id" scope="col">
+                        <button class="btn btn-danger hide" id="studyClass-@studyClass.Id" onclick="removeStudyClass('@studyClass.Id')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                        <p id="study-class-@studyClass.Id">@studyClass.Name</p>
+                    </th>
+                }
+                <th scope="col">Итого</th>
+                <th scope="col">Изменить</th>
+            </tr>
+            @{
+                var totalByExtraSubjects = 0;
+                foreach (var subject in Model.ExtraSubjects)
+                {
+                    totalByExtraSubjects += subject.SubjectHoursTotal;
+                    <tr class="subject-row">
+                        <td data-subject-id="@subject.Id" id="subject-@subject.Id-program">@subject.Name</td>
+                        <td data-subject-id="@subject.Id">@subject.ShortName</td>
+                        @{
+                            foreach (var studyClass in Model.StudyClasses)
+                            {
+                                var currentHours = Model.ExtraSubjectPrograms.FirstOrDefault(ch => ch.SubjectId == subject.Id && ch.StudyClassId == studyClass.Id).Hours;
+                                <td class="subject-plan-cell" data-required-subject-id="@subject.Id">
+                                    <p class="current-extra-subject-@subject.Id" id="extra-subject-@subject.Id-@studyClass.Id">@currentHours</p>
+                                    <input type="number" min="0" value="@currentHours" class="form-control extra-subject-input-@subject.Id hide" id="extra-subjectId-classId-@subject.Id-@studyClass.Id">
+                                </td>
+                            }
+                        }
+                        <th>@subject.SubjectHoursTotal</th>
+                        <td>
+                            <button class="btn btn-outline-secondary" id="edit-extra-subject-@subject.Id" onclick="editExtraSubjectHours('@subject.Id')"><i class="fa-solid fa-pencil"></i>Изменить</button>
+                            <button class="btn btn-danger delete-teacher-info-btn" id="delete-extra-subject-@subject.Id" onclick="deleteExtraSubject('@subject.Id')"><i class="fa-solid fa-trash"></i> Удалить</button>
+                            <button class="btn btn-outline-success hide" id="save-extra-subject-@subject.Id" onclick="saveExtraSubject('@subject.Id')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                            <button class="btn btn-outline-danger hide" id="cancel-extra-subject-@subject.Id" onclick="cancelExtraSubject('@subject.Id')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                        </td>
+                    </tr>
+                }
+            }
+            <tr class="class-grand-total">
+                <th colspan="2">Всего</th>
+                @{
+                    var extraTotalByClasses = 0;
+                    var extraTotal = 0;
+                    foreach (var studyClass in Model.StudyClasses)
+                    {
+                        <th>@studyClass.TotalRequiredHours</th>
+                        extraTotalByClasses += studyClass.TotalRequiredHours;
+                    }
+
+                    if (totalByExtraSubjects == extraTotalByClasses)
+                        extraTotal = totalByExtraSubjects;
+                }
+                <th>@extraTotal</th>
+            </tr>
+        </table>
+    </div>
+</div>

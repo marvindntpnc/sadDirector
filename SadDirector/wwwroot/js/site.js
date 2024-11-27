@@ -343,7 +343,38 @@ function saveSubjectList(studyLevel){
     $('#'+studyLevel+'-required-subjects').text(currentSubjects.slice(0, -2));
     $('#'+studyLevel+'-formed-subjects').text(currentFormedSubjects.slice(0, -2));
 
-    cancelSubjectList(studyLevel)
+    let levelId=0
+    switch (studyLevel){
+        case "beginner":
+            levelId=0
+            break;
+        case "middle":
+            levelId=1
+            break;
+        case "high":
+            levelId=2
+            break;
+    }
+    var postData = {
+        requiredSubjectIds:requiredSubjects,
+        formedSubjectIds:formedSubjects,
+        StudyLevel:levelId
+    };
+    const url=window.location.origin
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url: url+'/Home/UpdateSubjectsList',
+        data: postData,
+        success: function (data, textStatus, jqXHR) {
+            if (data.success) {
+                location.reload()
+            }
+        },
+        complete: function (jqXHR, textStatus) {
+
+        }
+    });
 }
 function cancelSubjectList(studyLevel){
     $('#'+studyLevel+'-required-subjects').removeClass('hide')
@@ -376,7 +407,25 @@ function addNewSubject(){
     });
 }
 function addNewExtraSubject(){
-    location.reload()
+    var postData = {
+        Name:$('#addExtraSubjectFullNameInput').val(),
+        ShortName:$('#addExtraSubjectShortNameInput').val()
+    };
+    const url=window.location.origin
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url: url+'/Home/CreateNewExtraSubject',
+        data: postData,
+        success: function (data, textStatus, jqXHR) {
+            if (data.success) {
+                location.reload()
+            }
+        },
+        complete: function (jqXHR, textStatus) {
+
+        }
+    });
 }
 
 function editSubjectHours(subjectId, studyLevel, isRequired){
@@ -401,13 +450,38 @@ function saveSubjectHours(subjectId, studyLevel, isRequired){
     if(isRequired)
         required='required'
 
+    let subjectProgram=[]
     $('.'+studyLevel+'-'+required+'-subject-input-'+subjectId).each(function (){
         const elementId=$(this).attr('id')
         const classId=elementId.slice(elementId.lastIndexOf('-')+1)
         const hours=$('#'+required+'-subjectId-classId-'+subjectId+'-'+classId).val()
         $('#'+required+'-subject-'+subjectId+'-'+classId).text(hours)
+        var studyClassSubjectProgram={
+            StudyClassId:classId,
+            SubjectId:subjectId,
+            Hours:hours,
+            IsRequired:isRequired
+        }
+        subjectProgram.push(studyClassSubjectProgram)
     })
-    cancelSubjectHours(subjectId, studyLevel, isRequired)
+    var postData = {
+        subjectPrograms:subjectProgram
+    };
+    const url=window.location.origin
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url: url+'/Home/UpdateSubjectProgram',
+        data: postData,
+        success: function (data, textStatus, jqXHR) {
+            if (data.success) {
+                cancelSubjectHours(subjectId, studyLevel, isRequired)
+            }
+        },
+        complete: function (jqXHR, textStatus) {
+
+        }
+    });
 }
 function cancelSubjectHours(subjectId, studyLevel, isRequired){
     let required='formed'
@@ -426,11 +500,58 @@ function cancelSubjectHours(subjectId, studyLevel, isRequired){
     $('#save-'+studyLevel+'-'+required+'-subject-'+subjectId).addClass('hide')
     $('#cancel-'+studyLevel+'-'+required+'-subject-'+subjectId).addClass('hide')
 }
-function deleteSubject(subjectId, studyLevel){
-    location.reload()
+function deleteSubjectProgram(subjectId, studyLevel){
+    let levelId=0
+    switch (studyLevel){
+        case "beginner":
+            levelId=0
+            break;
+        case "middle":
+            levelId=1
+            break;
+        case "high":
+            levelId=2
+            break;
+    }
+    var postData = {
+        subjectId:subjectId,
+        studyLevel:levelId
+    };
+    const url=window.location.origin
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url: url+'/Home/DeleteSubjectProgram',
+        data: postData,
+        success: function (data, textStatus, jqXHR) {
+            if (data.success) {
+                location.reload()
+            }
+        },
+        complete: function (jqXHR, textStatus) {
+
+        }
+    });
 }
 function removeStudyClass(classId){
-    location.reload()
+    var postData = {
+        classId:classId,
+    };
+    const url=window.location.origin
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url: url+'/Home/DeleteStudyClass',
+        data: postData,
+        success: function (data, textStatus, jqXHR) {
+            if (data.success) {
+                location.reload()
+            }
+        },
+        complete: function (jqXHR, textStatus) {
+
+        }
+    });
 }
 function addNewStudyClass(studyLevel){
     let levelId=0
@@ -580,13 +701,37 @@ function editExtraSubjectHours(extraSubjectId){
     $('#cancel-extra-subject-'+extraSubjectId).removeClass('hide')
 }
 function saveExtraSubject(extraSubjectId){
+    let subjectProgram=[]
     $('.extra-subject-input-'+extraSubjectId).each(function (){
         const elementId=$(this).attr('id')
         const classId=elementId.slice(elementId.lastIndexOf('-')+1)
         const hours=$('#extra-subjectId-classId-'+extraSubjectId+'-'+classId).val()
         $('#extra-subject-'+extraSubjectId+'-'+classId).text(hours)
+        var studyClassSubjectProgram={
+            StudyClassId:classId,
+            ExtraSubjectId:extraSubjectId,
+            Hours:hours,
+        }
+        subjectProgram.push(studyClassSubjectProgram)
     })
-    cancelExtraSubject(extraSubjectId)
+    var postData = {
+        subjectPrograms:subjectProgram
+    };
+    const url=window.location.origin
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url: url+'/Home/UpdateExtraSubjectProgram',
+        data: postData,
+        success: function (data, textStatus, jqXHR) {
+            if (data.success) {
+                cancelExtraSubject(extraSubjectId)
+            }
+        },
+        complete: function (jqXHR, textStatus) {
+
+        }
+    });
 }
 function cancelExtraSubject(extraSubjectId){
     $('.current-extra-subject-'+extraSubjectId).each(function (){
@@ -602,7 +747,24 @@ function cancelExtraSubject(extraSubjectId){
     $('#cancel-extra-subject-'+extraSubjectId).addClass('hide')
 }
 function deleteExtraSubject(extraSubjectId){
-    location.reload()
+    var postData={
+        extraSubjectId:extraSubjectId,
+    }
+    const url=window.location.origin
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url: url+'/Home/DeleteExtraSubject',
+        data: postData,
+        success: function (data, textStatus, jqXHR) {
+            if (data.success) {
+                location.reload()
+            }
+        },
+        complete: function (jqXHR, textStatus) {
+
+        }
+    });
 }
 
 function hourCellHover(element){

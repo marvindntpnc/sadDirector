@@ -77,4 +77,75 @@ public class HomeController : Controller
             success = true
         });
     }
+    [HttpPost]
+    public async Task<IActionResult> CreateNewExtraSubject(SubjectModel model)
+    {
+        await _sadDirectorService.AddNewExtraSubjectAsync(model);
+        return Json(new
+        {
+            success = true
+        });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteSubjectProgram(int subjectId, StudyClassLevel studyLevel)
+    {
+        await _sadDirectorService.DeleteSubjectProgramAsync(subjectId,studyLevel);
+        return Json(new
+        {
+            success = true
+        });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateSubjectProgram(SubjectProgramModel[] subjectPrograms)
+    {
+        await _sadDirectorService.UpdateSubjectProgramAsync(subjectPrograms);
+        return Json(new
+        {
+            success = true
+        });
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> UpdateExtraSubjectProgram(SubjectProgramModel[] subjectPrograms)
+    {
+        await _sadDirectorService.UpdateExtraSubjectProgramAsync(subjectPrograms);
+        return Json(new
+        {
+            success = true
+        });
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> DeleteExtraSubject(int extraSubjectId)
+    {
+        await _sadDirectorService.DeleteExtraSubjectAsync(extraSubjectId);
+        return Json(new
+        {
+            success = true
+        });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteStudyClass(int classId)
+    {
+        await _sadDirectorService.DeleteStudyClassAsync(classId);
+        return Json(new
+        {
+            success = true
+        });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateSubjectsList(int[] requiredSubjectIds, int[] formedSubjectIds,StudyClassLevel studyLevel)
+    {
+        await _sadDirectorService.UpdateSubjectsListAsync(requiredSubjectIds,formedSubjectIds, studyLevel);
+        return Json(new
+        {
+            success = true
+        });
+    }
+
+
 }

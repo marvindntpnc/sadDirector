@@ -16,4 +16,7 @@ public class ApplicationContext : DbContext
     public DbSet<TeacherSubjects> TeachersSubjects{ get; set; } = null!;
     public DbSet<StudySubject> StudySubjects { get; set; } = null!;
     public DbSet<StudyClass> StudyClasses { get; set; } = null!;
+    public DbSet<TeachingProgram> TeachingPrograms { get; set; } = null!;
+    public DbSet<ExtraSubject?> ExtraSubjects { get; set; } = null!;
+    public DbSet<ExtraSubjectProgram> ExtraSubjectPrograms { get; set; } = null!;
 }

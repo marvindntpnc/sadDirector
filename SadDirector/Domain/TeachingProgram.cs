@@ -1,12 +1,15 @@
 namespace SadDirector.Domain;
 
-public class StudyClass
+public class TeachingProgram
 {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public int StudyClassId { get; set; }
+    public int SubjectId { get; set; }
+    public int Hours { get; set; }
     public int StudyClassLevelId { get; set; }
     public StudyClassLevel StudyClassLevel{
         get => (StudyClassLevel)StudyClassLevelId;
         set => StudyClassLevelId = (int)value;
     }
+    public bool IsRequired { get; set; }
 }
