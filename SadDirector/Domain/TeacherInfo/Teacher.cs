@@ -1,4 +1,6 @@
-namespace SadDirector.Domain;
+using SadDirector.Domain.TeacherInfo.enums;
+
+namespace SadDirector.Domain.TeacherInfo;
 
 public class Teacher
 {

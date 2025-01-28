@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SadDirector.Domain;
+using SadDirector.Domain.TeachingPlan.enums;
 
 namespace SadDirector.Models;
 

@@ -38,7 +38,6 @@ function addNewTeacher(){
     $('.delete-teacher-info-btn').each(function (){
         $(this).prop('disabled',true)
     })
-
 }
 function deleteTeacherInfo(teacherId){
     $('#teacher'+teacherId).remove()
@@ -53,7 +52,7 @@ function saveNewTeacherInfo(){
         TariffCategory:$('#newTeachersTariffCategory').val(),
         ExperienceFrom:$('#newTeachersExperienceFrom').val(),
         TeacherDegree:$('#newTeachersDegree').val(),
-        //SubjectIds:subjects,
+        SubjectIds:$('#newTeachersSubjects').val(),
         StudyClassId:$('#newTeachersClass').val(),
         ClassroomId:$('#newTeachersClassroom').val(),
         IsDirector:$('#newTeachersIsDirector').prop('checked'),
@@ -134,9 +133,16 @@ function saveTeacherInfo(teacherId){
     $('#teachersCurrentDegree-'+teacherId).text(degree);
 
     const subjects=$('#teachersSubjects-'+teacherId).val()
+    const options=$('#teachersSubjects-'+teacherId+' option:selected')
     let currentSubjects=''
-    for (let i=0;i<subjects.length;i++){
-        currentSubjects+=subjects[i]+', '
+    for (let i=0;i<options.length;i++){
+        for (let j=0;j<subjects.length;j++){
+            if(options[i].value==subjects[i]){
+                currentSubjects+=options[i].innerText+', '
+                break;
+            }
+            
+        }
     }
     $('#teachersCurrentSubjects-'+teacherId).text(currentSubjects.slice(0, -2));
 
@@ -266,7 +272,7 @@ function saveTeacherInfo(teacherId){
         TariffCategory:tariffCategoryId,
         ExperienceFrom:experienceFrom,
         TeacherDegree:degreeId,
-        //SubjectIds:subjects,
+        SubjectIds:subjects,
         StudyClassId:teachersClassId,
         ClassroomId:classroomId,
         IsDirector:isDirector,
@@ -294,6 +300,9 @@ function saveTeacherInfo(teacherId){
         success: function (data, textStatus, jqXHR) {
             if (data.success) {
                 cancelTeacherInfo(teacherId)
+                location.reload();
+            }else{
+                alert(data.error)
             }
         },
         complete: function (jqXHR, textStatus) {

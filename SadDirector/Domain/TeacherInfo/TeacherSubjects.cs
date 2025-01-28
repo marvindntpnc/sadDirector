@@ -1,4 +1,4 @@
-namespace SadDirector.Domain;
+namespace SadDirector.Domain.TeacherInfo;
 
 public class TeacherSubjects
 {

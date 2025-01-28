@@ -1,4 +1,4 @@
-using SadDirector.Domain;
+using SadDirector.Domain.TeacherInfo.enums;
 
 namespace SadDirector.Models;
 
@@ -14,6 +14,7 @@ public class TeacherModel
     public DateTime ExperienceFrom { get; set; }
     public TeacherDegree TeacherDegree { get; set; }
     public List<int> SubjectIds { get; set; }
+    public string TeacherSubjectList { get; set; }
     public int StudyClassId { get; set; }
     public int ClassroomId { get; set; }
     public bool IsDirector { get; set; }

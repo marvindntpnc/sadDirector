@@ -1,24 +1,26 @@
- @model SadDirector.Models.Lists.TeacherListModel
- <header>
-        <h1>Учителя</h1>
-    </header>
-    <div class="card">
-        <div class="container">
-            <div class="add-button">
-                <button type="button" id="add-teachers-info" class="btn btn-outline-primary" onclick="addNewTeacher()"><i class="fa fa-plus"></i> Добавить</button>
-            </div>
-        </div>
-        <div class="container">
-        <div class="accordion" id="TeacherAccordion">
-            <div class="accordion-item hide" id="newTeacher">
-                <h2 class="accordion-header" id="new-teacher-info">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#new-teacher-full-info" aria-expanded="false" aria-controls="new-teacher-full-info">
-                        Введите данные учителя
-                    </button>
-                </h2>
-                <div id="new-teacher-full-info" class="accordion-collapse collapse show" aria-labelledby="new-teacher-info" data-bs-parent="#TeacherAccordion">
-                <div class="accordion-body">
-                <div class="row">
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SadDirector.Domain.TeacherInfo.enums
+@model SadDirector.Models.Lists.TeacherListModel
+<header>
+    <h1>Учителя</h1>
+</header>
+<div class="card">
+<div class="container">
+    <div class="add-button">
+        <button type="button" id="add-teachers-info" class="btn btn-outline-primary" onclick="addNewTeacher()"><i class="fa fa-plus"></i> Добавить</button>
+    </div>
+</div>
+<div class="container">
+<div class="accordion" id="TeacherAccordion">
+    <div class="accordion-item hide" id="newTeacher">
+        <h2 class="accordion-header" id="new-teacher-info">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#new-teacher-full-info" aria-expanded="false" aria-controls="new-teacher-full-info">
+                Введите данные учителя
+            </button>
+        </h2>
+    <div id="new-teacher-full-info" class="accordion-collapse collapse show" aria-labelledby="new-teacher-info" data-bs-parent="#TeacherAccordion">
+        <div class="accordion-body">
+            <div class="row">
                 <div class="col-md-6">
                     <div class="row align-items-center teacher-info-row">
                         <div class="col-md-4 teacher-info-label">
@@ -50,9 +52,12 @@
                         </div>
                         <div class="col-md-8 new-teacher-info-input">
                             <select type="text" class="form-select" id="newTeachersEducation">
-                                <option value="0">Бакалавр</option>
-                                <option value="1">Средне-специальное</option>
-                                <option value="2">Высшее</option>
+                                @{
+                                    foreach (var educationLevel in Model.TeachersEducationLevels)
+                                    {
+                                        <option value="@educationLevel.Value">@educationLevel.Text</option>
+                                    }
+                                }
                             </select>
                         </div>
                     </div>
@@ -62,9 +67,12 @@
                         </div>
                         <div class="col-md-8 new-teacher-info-input">
                             <select type="text" class="form-select" id="newTeachersCategory">
-                                <option value="0">1 категория</option>
-                                <option value="1">Специалист</option>
-                                <option value="2">Высшая</option>
+                                @{
+                                    foreach (var category in Model.TeachersCategory)
+                                    {
+                                        <option value="@category.Value">@category.Text</option>
+                                    }
+                                }
                             </select>
                         </div>
                     </div>
@@ -74,21 +82,12 @@
                         </div>
                         <div class="col-md-8 new-teacher-info-input">
                             <select type="text" class="form-select" id="newTeachersTariffCategory">
-                                <option value="0">1</option>
-                                <option value="1">2</option>
-                                <option value="2">3</option>
-                                <option value="3">4</option>
-                                <option value="4">5</option>
-                                <option value="5">6</option>
-                                <option value="6">7</option>
-                                <option value="7">8</option>
-                                <option value="8">9</option>
-                                <option value="9">10</option>
-                                <option value="10">11</option>
-                                <option value="11">12</option>
-                                <option value="12">13</option>
-                                <option value="13">14</option>
-                                <option selected value="14">15</option>
+                                @{
+                                    foreach (var tariffCategory in Model.TeachersTariffCategory)
+                                    {
+                                        <option value="@tariffCategory.Value">@tariffCategory.Text</option>
+                                    }
+                                }
                             </select>
                         </div>
                     </div>
@@ -106,9 +105,12 @@
                         </div>
                         <div class="col-md-8 new-teacher-info-input">
                             <select type="text" class="form-select" id="newTeachersDegree">
-                                <option value="0">Нет</option>
-                                <option value="1">Директор</option>
-                                <option value="2">Методист</option>
+                                @{
+                                foreach (var degree in Model.TeachersDegrees)
+                                {
+                                <option value="@degree.Value">@degree.Text</option>
+                                }
+                                }
                             </select>
                         </div>
                     </div>
@@ -118,11 +120,12 @@
                         </div>
                         <div class="col-md-8 new-teacher-info-input">
                             <select class="form-select teachers-multiple-select" id="newTeachersSubjects" data-placeholder="Choose anything" multiple>
-                                <option>Математика</option>
-                                <option>Русский язык</option>
-                                <option>Информатика</option>
-                                <option>МХК</option>
-                                <option>Физкультура</option>
+                                @{
+                                    foreach (var subject in Model.TeachersSubjects)
+                                    {
+                                        <option value="@subject.Value">@subject.Text</option>
+                                    }
+                                }
                             </select>
                         </div>
                     </div>
@@ -132,11 +135,15 @@
                         </div>
                         <div class="col-md-8 new-teacher-info-input">
                             <select type="text" class="form-select" id="newTeachersClass">
-                                <option value="0">Нет</option>
-                                <option value="1">1-Б</option>
-                                <option value="2">5-Б</option>
-                                <option value="3">9-А</option>
-                                <option value="4">11-В</option>
+                                @{
+                                    foreach (var studyClass in Model.TeachersStudyClasses)
+                                    {
+                                        var isAvailable = Model.TeacherList.Any(t => t.StudyClassId == int.Parse(studyClass.Value))
+                                            ? "disabled"
+                                            : "";
+                                        @:<option @isAvailable value="@studyClass.Value">@studyClass.Text</option>
+                                    }
+                                }
                             </select>
                         </div>
                     </div>
@@ -146,690 +153,753 @@
                         </div>
                         <div class="col-md-8 new-teacher-info-input">
                             <select type="text" class="form-select" id="newTeachersClassroom">
-                                <option value="0">Нет</option>
-                                <option value="1">1</option>
-                                <option value="2">12</option>
-                                <option value="3">19</option>
+                                @{
+                                    foreach (var classroom in Model.TeachersClassroom)
+                                    {
+                                        <option value="@classroom.Value">@classroom.Text</option>
+                                    }
+                                }
                             </select>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeachersIsDirector">Директор</label>
-                        </div>
-                        <div class="col-md-4 new-teacher-info-input ">
-                            <input type="checkbox" class="form-check-input" id="newTeachersIsDirector">
-                        </div>
-                    </div>
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeachersIsHeadTeacher">Заместитель директора</label>
-                        </div>
-                        <div class="col-md-4 new-teacher-info-input ">
-                            <input type="checkbox" class="form-check-input" id="newTeachersIsHeadTeacher">
-                        </div>
-                    </div>
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeachersIsMentor">Советник по воспитанию</label>
-                        </div>
-                        <div class="col-md-4 new-teacher-info-input ">
-                            <input type="checkbox" class="form-check-input" id="newTeachersIsMentor">
-                        </div>
-                    </div>
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeachersAfterClassesTeacher">Воспитатель ГПД</label>
-                        </div>
-                        <div class="col-md-4 new-teacher-info-input ">
-                            <input type="checkbox" class="form-check-input" id="newTeachersAfterClassesTeacher">
-                        </div>
-                    </div>
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeachersIsPsychologist">Педагог-психолог</label>
-                        </div>
-                        <div class="col-md-4 new-teacher-info-input ">
-                            <input type="checkbox" class="form-check-input" id="newTeachersIsPsychologist">
-                        </div>
-                    </div>
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeachersIsSocial">Социальный педагог</label>
-                        </div>
-                        <div class="col-md-4 new-teacher-info-input ">
-                            <input type="checkbox" class="form-check-input" id="newTeachersIsSocial">
-                        </div>
-                    </div>
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeachersIsFacilitator">Педагог-организатор</label>
-                        </div>
-                        <div class="col-md-4 new-teacher-info-input ">
-                            <input type="checkbox" class="form-check-input" id="newTeachersIsFacilitator">
-                        </div>
-                    </div>
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeachersIsLibraryManager">Заведующий библиотекой</label>
-                        </div>
-                        <div class="col-md-4 new-teacher-info-input ">
-                            <input type="checkbox" class="form-check-input" id="newTeachersIsLibraryManager">
-                        </div>
-                    </div>
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeachersIsLogopedist">Учитель-логопед</label>
-                        </div>
-                        <div class="col-md-4 new-teacher-info-input ">
-                            <input type="checkbox" class="form-check-input" id="newTeachersIsLogopedist">
-                        </div>
-                    </div>
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeachersIsMain">Основной</label>
-                        </div>
-                        <div class="col-md-4 new-teacher-info-input ">
-                            <input type="checkbox" checked class="form-check-input" id="newTeachersIsMain">
-                        </div>
-                    </div>
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeacherMuseum">Школьный музей</label>
-                        </div>
-                        <div class="col-md-4 teacher-info-input-1">
-                            <input type="checkbox" disabled class="form-check-input" id="newTeacherMuseum">
-                        </div>
-                    </div>
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeacherTheater">Школьный театр</label>
-                        </div>
-
-                        <div class="col-md-4 teacher-info-input-1">
-                            <input type="checkbox" disabled class="form-check-input" id="newTeacherTheater">
-                        </div>
-                    </div>
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeacherChorus">Школьный хор</label>
-                        </div>
-
-                        <div class="col-md-4 teacher-info-input-1">
-                            <input type="checkbox" class="form-check-input" id="newTeacherChorus">
-                        </div>
-                    </div>
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeacherScouts">Юнармия</label>
-                        </div>
-                        <div class="col-md-4 teacher-info-input-1">
-                            <input type="checkbox" class="form-check-input" id="newTeacherScouts">
-                        </div>
-                    </div>
-                    <div class="row align-items-center teacher-info-row">
-                        <div class="col-md-8 teacher-info-label">
-                            <label for="newTeacherSportClub">Спортклуб</label>
-                        </div>
-
-                        <div class="col-md-4 teacher-info-input-1">
-                            <input type="checkbox" class="form-check-input" id="newTeacherSportClub">
-                        </div>
-                    </div>
-                    <div class="row align-items-center editSaveButtonsBlock">
-                        <div class="col-md-6" id="saveNewTeacherInfo" style="text-align: end">
-                            <button class="btn btn-outline-success btn-lg" onclick="saveNewTeacherInfo()"><i class="fa-regular fa-floppy-disk"></i>Сохранить</button>
-                        </div>
-                        <div class="col-md-6" id="cancelNewTeacherInfo">
-                            <button class="btn btn-outline-danger btn-lg" onclick="cancelNewTeacherInfo()"><i class="fa-solid fa-xmark"></i>Отменить</button>
-                        </div>
-                    </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeachersIsDirector">Директор</label>
                 </div>
-                </div>
-                </div>
+                <div class="col-md-4 new-teacher-info-input ">
+                    <input type="checkbox" class="form-check-input" id="newTeachersIsDirector">
                 </div>
             </div>
-        @{
-            foreach (var teacherModel in Model.TeacherList)
-            {
-                var teacherName = $"{teacherModel.Surname} {teacherModel.Name} {teacherModel.SecondName}";
-                var accordionItemId = $"teacher{teacherModel.Id}";
-                <div class="accordion-item" id="@accordionItemId">
-                    <h2 class="accordion-header" id="teacher-info-@teacherModel.Id">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#teacher-full-info-@teacherModel.Id" aria-expanded="false" aria-controls="teacher-full-info-@teacherModel.Id">
-                            @teacherName
-                        </button>
-                    </h2>
-                    <div id="teacher-full-info-@teacherModel.Id" class="accordion-collapse collapse" aria-labelledby="teacher-info-@teacherModel.Id" data-bs-parent="#TeacherAccordion">
-                        <div class="accordion-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-4 teacher-info-label">
-                                            <label for="teachersSurname-@teacherModel.Id">Фимилия</label>
-                                        </div>
-                                        <div class="col-md-8 teacher-current-info-@teacherModel.Id">
-                                            <p id="teachersCurrentSurname-@teacherModel.Id">@teacherModel.Surname</p>
-                                        </div>
-                                        <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="text" value="@teacherModel.Surname" class="form-control" id="teachersSurname-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-4 teacher-info-label">
-                                            <label for="teachersName-@teacherModel.Id">Имя</label>
-                                        </div>
-                                        <div class="col-md-8 teacher-current-info-@teacherModel.Id">
-                                            <p id="teachersCurrentName-@teacherModel.Id">@teacherModel.Name</p>
-                                        </div>
-                                        <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="text" value="@teacherModel.Name" class="form-control" id="teachersName-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-4 teacher-info-label">
-                                            <label for="teachersSecondName-@teacherModel.Id">Отчество</label>
-                                        </div>
-                                        <div class="col-md-8 teacher-current-info-@teacherModel.Id">
-                                            <p id="teachersCurrentSecondName-@teacherModel.Id">@teacherModel.SecondName</p>
-                                        </div>
-                                        <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="text" value="@teacherModel.SecondName" class="form-control" id="teachersSecondName-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-4 teacher-info-label">
-                                            <label for="teachersEducation-@teacherModel.Id">Образование</label>
-                                        </div>
-                                        <div class="col-md-8 teacher-current-info-@teacherModel.Id">
-                                            <p id="teachersCurrentEducation-@teacherModel.Id">Высшее</p>
-                                        </div>
-                                        <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
-                                            <select type="text" class="form-select" id="teachersEducation-@teacherModel.Id">
-                                                <option value="0">Бакалавр</option>
-                                                <option value="1">Средне-специальное</option>
-                                                <option selected value="2">Высшее</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-4 teacher-info-label">
-                                            <label for="teachersCategory-@teacherModel.Id">Категория</label>
-                                        </div>
-                                        <div class="col-md-8 teacher-current-info-@teacherModel.Id">
-                                            <p id="teachersCurrentCategory-@teacherModel.Id">Высшая</p>
-                                        </div>
-                                        <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
-                                            <select type="text" class="form-select" id="teachersCategory-@teacherModel.Id">
-                                                <option value="0">1 категория</option>
-                                                <option value="1">Специалист</option>
-                                                <option selected value="2">Высшая</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-4 teacher-info-label">
-                                            <label for="teachersTariffCategory-@teacherModel.Id">Тарифный разряд</label>
-                                        </div>
-                                        <div class="col-md-8 teacher-current-info-@teacherModel.Id">
-                                            <p id="teachersCurrentTariffCategory-@teacherModel.Id">15</p>
-                                        </div>
-                                        <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
-                                            <select type="text" class="form-select" id="teachersTariffCategory-@teacherModel.Id">
-                                                <option value="0">1</option>
-                                                <option value="1">2</option>
-                                                <option value="2">3</option>
-                                                <option value="3">4</option>
-                                                <option value="4">5</option>
-                                                <option value="5">6</option>
-                                                <option value="6">7</option>
-                                                <option value="7">8</option>
-                                                <option value="8">9</option>
-                                                <option value="9">10</option>
-                                                <option value="10">11</option>
-                                                <option value="11">12</option>
-                                                <option value="12">13</option>
-                                                <option value="13">14</option>
-                                                <option selected value="14">15</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-4 teacher-info-label">
-                                            <label for="teachersExperienceFrom-@teacherModel.Id">Начало карьеры</label>
-                                        </div>
-                                        <div class="col-md-8 teacher-current-info-@teacherModel.Id">
-                                            <p id="teachersCurrentExperienceFrom-@teacherModel.Id">@teacherModel.ExperienceFrom.ToString("dd.MM.yyyy")</p>
-                                        </div>
-                                        <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
-                                            <input value="20.08.2015" class="teachers-datepicker" type="text" id="teachersExperienceFrom-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-4 teacher-info-label">
-                                            <label for="teachersDegree-@teacherModel.Id">Звание</label>
-                                        </div>
-                                        <div class="col-md-8 teacher-current-info-@teacherModel.Id">
-                                            <p id="teachersCurrentDegree-@teacherModel.Id">Директор</p>
-                                        </div>
-                                        <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
-                                            <select type="text" class="form-select" id="teachersDegree-@teacherModel.Id">
-                                                <option value="0">Нет</option>
-                                                <option selected value="1">Директор</option>
-                                                <option value="2">Методист</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-4 teacher-info-label">
-                                            <label for="teachersSubjects-@teacherModel.Id">Предметы</label>
-                                        </div>
-                                        <div class="col-md-8 teacher-current-info-@teacherModel.Id">
-                                            <p id="teachersCurrentSubjects-@teacherModel.Id">Информатика, Английский язык</p>
-                                        </div>
-                                        <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
-                                            <select class="form-select teachers-multiple-select" id="teachersSubjects-@teacherModel.Id" data-placeholder="Choose anything" multiple>
-                                                <option>Математика</option>
-                                                <option>Русский язык</option>
-                                                <option selected>Информатика</option>
-                                                <option selected>Английский язык</option>
-                                                <option>Физкультура</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-4 teacher-info-label">
-                                            <label for="teachersClass-@teacherModel.Id">Классное руководство</label>
-                                        </div>
-                                        <div class="col-md-8 teacher-current-info-@teacherModel.Id">
-                                            <p id="teachersCurrentClass-@teacherModel.Id">Нет</p>
-                                        </div>
-                                        <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
-                                            <select type="text" class="form-select" id="teachersClass-@teacherModel.Id">
-                                                <option selected value="0">Нет</option>
-                                                <option value="1">1-Б</option>
-                                                <option value="2">2-Б</option>
-                                                <option value="3">5-Б</option>
-                                                <option value="4">9-А</option>
-                                                <option value="5">11-В</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-4 teacher-info-label">
-                                            <label for="teachersClassroom-@teacherModel.Id">Кабинет</label>
-                                        </div>
-                                        <div class="col-md-8 teacher-current-info-@teacherModel.Id">
-                                            <p id="teachersCurrentClassroom-@teacherModel.Id">Нет</p>
-                                        </div>
-                                        <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
-                                            <select type="text" class="form-select" id="teachersClassroom-@teacherModel.Id">
-                                                <option selected value="0">Нет</option>
-                                                <option value="1">1</option>
-                                                <option value="2">12</option>
-                                                <option value="3">19</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersIsDirector-@teacherModel.Id">Директор</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsDirector-@teacherModel.Id">
-                                            @{
-                                                var isChecked = "";
-                                                if (teacherModel.IsDirector)
-                                                {
-                                                    <span class="badge rounded-pill bg-success">ДА</span>
-                                                    isChecked = "checked";
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                }
-                                            }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox" @isChecked class="form-check-input" id="teachersIsDirector-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersIsHeadTeacher-@teacherModel.Id">Заместитель директора</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsHeadTeacher-@teacherModel.Id">
-                                            @{
-                                                isChecked = "";
-                                                if (teacherModel.IsHeadTeacher)
-                                                {
-                                                    <span class="badge rounded-pill bg-success">ДА</span>
-                                                    isChecked = "checked";
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                }
-                                            }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox" @isChecked class="form-check-input" id="teachersIsHeadTeacher-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersIsMentor-@teacherModel.Id">Советник по воспитанию</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsMentor-@teacherModel.Id">
-                                            @{
-                                                                                            isChecked = "";
-                                                                                            if (teacherModel.IsMentor)
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-success">ДА</span>
-                                                                                                isChecked = "checked";
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                                                            }
-                                                                                        }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox" @isChecked class="form-check-input" id="teachersIsMentor-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersAfterClassesTeacher-@teacherModel.Id">Воспитатель ГПД</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentAfterClassesTeacher-@teacherModel.Id">
-                                            @{
-                                                                                            isChecked = "";
-                                                                                            if (teacherModel.AfterClassesTeacher)
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-success">ДА</span>
-                                                                                                isChecked = "checked";
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                                                            }
-                                                                                        }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox" @isChecked class="form-check-input" id="teachersAfterClassesTeacher-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersIsPsychologist-@teacherModel.Id">Педагог-психолог</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsPsychologist-@teacherModel.Id">
-                                            @{
-                                                                                            isChecked = "";
-                                                                                            if (teacherModel.IsPsychologist)
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-success">ДА</span>
-                                                                                                isChecked = "checked";
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                                                            }
-                                                                                        }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox" @isChecked class="form-check-input" id="teachersIsPsychologist-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersIsSocial-@teacherModel.Id">Социальный педагог</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsSocial-@teacherModel.Id">
-                                            @{
-                                                                                            isChecked = "";
-                                                                                            if (teacherModel.IsSocial)
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-success">ДА</span>
-                                                                                                isChecked = "checked";
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                                                            }
-                                                                                        }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox" @isChecked class="form-check-input" id="teachersIsSocial-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersIsFacilitator-@teacherModel.Id">Педагог-организатор</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsFacilitator-@teacherModel.Id">
-                                            @{
-                                                 isChecked = "";
-                                                 if (teacherModel.IsFacilitator)
-                                                 {
-                                                     <span class="badge rounded-pill bg-success">ДА</span>
-                                                     isChecked = "checked";
-                                                 }
-                                                 else
-                                                 {
-                                                     <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                     
-                                                 }
-                                             }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox" @isChecked class="form-check-input" id="teachersIsFacilitator-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersIsLibraryManager-@teacherModel.Id">Заведующий библиотекой</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsLibraryManager-@teacherModel.Id">
-                                            @{
-                                                                                            isChecked = "";
-                                                                                            if (teacherModel.IsLibraryManager)
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-success">ДА</span>
-                                                                                                isChecked = "checked";
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                                                            }
-                                                                                        }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox" @isChecked class="form-check-input" id="teachersIsLibraryManager-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersIsLogopedist-@teacherModel.Id">Учитель-логопед</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsLogopedist-@teacherModel.Id">
-                                            @{
-                                                                                            isChecked = "";
-                                                                                            if (teacherModel.IsLogopedist)
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-success">ДА</span>
-                                                                                                isChecked = "checked";
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                                                            }
-                                                                                        }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox" @isChecked class="form-check-input" id="teachersIsLogopedist-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersIsMain-@teacherModel.Id">Основной</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsMain-@teacherModel.Id">
-                                            @{
-                                                                                            isChecked = "";
-                                                                                            if (teacherModel.IsMain)
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-success">ДА</span>
-                                                                                                isChecked = "checked";
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                                                            }
-                                                                                        }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox"  @isChecked class="form-check-input" id="teachersIsMain-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersMuseum-@teacherModel.Id">Школьный музей</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentMuseum-@teacherModel.Id">
-                                            @{
-                                                                                            isChecked = "";
-                                                                                            if (teacherModel.Museum)
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-success">ДА</span>
-                                                                                                isChecked = "checked";
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                                                            }
-                                                                                        }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox" disabled @isChecked class="form-check-input" id="teachersMuseum-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersTheater-@teacherModel.Id">Школьный театр</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentTheater-@teacherModel.Id">
-                                            @{
-                                                                                            isChecked = "";
-                                                                                            if (teacherModel.Theater)
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-success">ДА</span>
-                                                                                                isChecked = "checked";
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                                                            }
-                                                                                        }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox" disabled @isChecked class="form-check-input" id="teachersTheater-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersChorus-@teacherModel.Id">Школьный хор</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentChorus-@teacherModel.Id">
-                                            @{
-                                                                                            isChecked = "";
-                                                                                            if (teacherModel.Chorus)
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-success">ДА</span>
-                                                                                                isChecked = "checked";
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                                                            }
-                                                                                        }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox" @isChecked class="form-check-input" id="teachersChorus-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersScouts-@teacherModel.Id">Юнармия</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentScouts-@teacherModel.Id">
-                                            @{
-                                                                                            isChecked = "";
-                                                                                            if (teacherModel.Scouts)
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-success">ДА</span>
-                                                                                                isChecked = "checked";
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                                                            }
-                                                                                        }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox" @isChecked class="form-check-input" id="teachersScouts-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center teacher-info-row">
-                                        <div class="col-md-8 teacher-info-label">
-                                            <label for="teachersSportClub-@teacherModel.Id">Спортклуб</label>
-                                        </div>
-                                        <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentSportClub-@teacherModel.Id">
-                                            @{
-                                                                                            isChecked = "";
-                                                                                            if (teacherModel.SportClub)
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-success">ДА</span>
-                                                                                                isChecked = "checked";
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                <span class="badge rounded-pill bg-danger">НЕТ</span>
-                                                                                            }
-                                                                                        }
-                                        </div>
-                                        <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
-                                            <input type="checkbox" @isChecked class="form-check-input" id="teachersSportClub-@teacherModel.Id">
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center editSaveButtonsBlock">
-                                        <div class="col-md-6" id="editTeacherInfo-@teacherModel.Id" style="text-align: center">
-                                            <button class="btn btn-outline-secondary btn-lg edit-teacher-info-btn" onclick="editTeacherInfo('1')"><i class="fa-solid fa-pencil"></i> Изменить</button>
-                                        </div>
-                                        <div class="col-md-6" id="deleteTeacherInfo-@teacherModel.Id" style="text-align: center">
-                                            <button class="btn btn-danger btn-lg delete-teacher-info-btn" onclick="deleteTeacherInfo('1')"><i class="fa-solid fa-trash"></i> Удалить</button>
-                                        </div>
-                                        <div class="col-md-6 hide" id="saveTeacherInfo-@teacherModel.Id" style="text-align: end">
-                                            <button class="btn btn-outline-success btn-lg" onclick="saveTeacherInfo('1')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
-                                        </div>
-                                        <div class="col-md-6 hide" id="cancelTeacherInfo-@teacherModel.Id">
-                                            <button class="btn btn-outline-danger btn-lg" onclick="cancelTeacherInfo('1')"><i class="fa-solid fa-xmark"></i> Отменить</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeachersIsHeadTeacher">Заместитель директора</label>
                 </div>
-            }
-        }
+                <div class="col-md-4 new-teacher-info-input ">
+                    <input type="checkbox" class="form-check-input" id="newTeachersIsHeadTeacher">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeachersIsMentor">Советник по воспитанию</label>
+                </div>
+                <div class="col-md-4 new-teacher-info-input ">
+                    <input type="checkbox" class="form-check-input" id="newTeachersIsMentor">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeachersAfterClassesTeacher">Воспитатель ГПД</label>
+                </div>
+                <div class="col-md-4 new-teacher-info-input ">
+                    <input type="checkbox" class="form-check-input" id="newTeachersAfterClassesTeacher">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeachersIsPsychologist">Педагог-психолог</label>
+                </div>
+                <div class="col-md-4 new-teacher-info-input ">
+                    <input type="checkbox" class="form-check-input" id="newTeachersIsPsychologist">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeachersIsSocial">Социальный педагог</label>
+                </div>
+                <div class="col-md-4 new-teacher-info-input ">
+                    <input type="checkbox" class="form-check-input" id="newTeachersIsSocial">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeachersIsFacilitator">Педагог-организатор</label>
+                </div>
+                <div class="col-md-4 new-teacher-info-input ">
+                    <input type="checkbox" class="form-check-input" id="newTeachersIsFacilitator">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeachersIsLibraryManager">Заведующий библиотекой</label>
+                </div>
+                <div class="col-md-4 new-teacher-info-input ">
+                    <input type="checkbox" class="form-check-input" id="newTeachersIsLibraryManager">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeachersIsLogopedist">Учитель-логопед</label>
+                </div>
+                <div class="col-md-4 new-teacher-info-input ">
+                    <input type="checkbox" class="form-check-input" id="newTeachersIsLogopedist">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeachersIsMain">Основной</label>
+                </div>
+                <div class="col-md-4 new-teacher-info-input ">
+                    <input type="checkbox" checked class="form-check-input" id="newTeachersIsMain">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeacherMuseum">Школьный музей</label>
+                </div>
+                <div class="col-md-4 teacher-info-input-1">
+                    <input type="checkbox" disabled class="form-check-input" id="newTeacherMuseum">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeacherTheater">Школьный театр</label>
+                </div>
+
+                <div class="col-md-4 teacher-info-input-1">
+                    <input type="checkbox" disabled class="form-check-input" id="newTeacherTheater">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeacherChorus">Школьный хор</label>
+                </div>
+
+                <div class="col-md-4 teacher-info-input-1">
+                    <input type="checkbox" class="form-check-input" id="newTeacherChorus">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeacherScouts">Юнармия</label>
+                </div>
+                <div class="col-md-4 teacher-info-input-1">
+                    <input type="checkbox" class="form-check-input" id="newTeacherScouts">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="newTeacherSportClub">Спортклуб</label>
+                </div>
+
+                <div class="col-md-4 teacher-info-input-1">
+                    <input type="checkbox" class="form-check-input" id="newTeacherSportClub">
+                </div>
+            </div>
+            <div class="row align-items-center editSaveButtonsBlock">
+                <div class="col-md-6" id="saveNewTeacherInfo" style="text-align: end">
+                    <button class="btn btn-outline-success btn-lg" onclick="saveNewTeacherInfo()"><i class="fa-regular fa-floppy-disk"></i>Сохранить</button>
+                </div>
+                <div class="col-md-6" id="cancelNewTeacherInfo">
+                    <button class="btn btn-outline-danger btn-lg" onclick="cancelNewTeacherInfo()"><i class="fa-solid fa-xmark"></i>Отменить</button>
+                </div>
+            </div>
         </div>
-            <div class="add-button">
-                <a asp-action="CreateOrUpdateTariff" asp-route-tariffId="@Model.TariffId" id="save-teachers-info" class="btn btn-outline-danger"><i class="fa-solid fa-arrow-left"></i> Назад</a>
             </div>
         </div>
     </div>
+</div>
+    @{
+    foreach (var teacherModel in Model.TeacherList)
+    {
+        string degreeName = string.Empty;
+        switch (teacherModel.TeacherDegree)
+        {
+            case TeacherDegree.Director:
+                degreeName = "Директор";
+                break;
+            case TeacherDegree.Methodist:
+                degreeName = "Методист";
+                break;
+        }
+
+        string categoryName = string.Empty;
+        switch (teacherModel.TeacherCategory)
+        {
+            case TeacherCategory.First:
+                categoryName = "Первая";
+                break;
+            case TeacherCategory.Higher:
+                categoryName = "Высшая";
+                break;
+            case TeacherCategory.Specialist:
+                categoryName = "Специалист";
+                break;
+        }
+            
+        string educationName = string.Empty;
+        switch (teacherModel.TeacherEducation)
+        {
+            case TeacherEducation.Bachelor:
+                educationName = "Бакалавр";
+                break;
+            case TeacherEducation.MediumSpecial:
+                educationName = "Среднее-специальное";
+                break;
+            case TeacherEducation.Higher:
+                educationName = "Высшее";
+                break;
+        }
+        
+        string teacherStudyClass=Model.TeachersStudyClasses.FirstOrDefault(tsc=>tsc.Value==teacherModel.StudyClassId.ToString())?.Text??"";
+        
+        string teacherClassroom=Model.TeachersClassroom.FirstOrDefault(tc=>tc.Value==teacherModel.ClassroomId.ToString())?.Text??"";
+        
+            
+        var teacherName = $"{teacherModel.Surname} {teacherModel.Name} {teacherModel.SecondName}";
+        var accordionItemId = $"teacher{teacherModel.Id}";
+        <div class="accordion-item teacher-accordion-item" id="@accordionItemId">
+        <h2 class="accordion-header" id="teacher-info-@teacherModel.Id">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#teacher-full-info-@teacherModel.Id" aria-expanded="false" aria-controls="teacher-full-info-@teacherModel.Id">
+                @teacherName
+            </button>
+        </h2>
+        <div id="teacher-full-info-@teacherModel.Id" class="accordion-collapse collapse" aria-labelledby="teacher-info-@teacherModel.Id" data-bs-parent="#TeacherAccordion">
+        <div class="accordion-body">
+        <div class="row">
+        <div class="col-md-6">
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-4 teacher-info-label">
+                    <label for="teachersSurname-@teacherModel.Id">Фимилия</label>
+                </div>
+                <div class="col-md-8 teacher-current-info-@teacherModel.Id">
+                    <p id="teachersCurrentSurname-@teacherModel.Id">@teacherModel.Surname</p>
+                </div>
+                <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
+                    <input type="text" value="@teacherModel.Surname" class="form-control" id="teachersSurname-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-4 teacher-info-label">
+                    <label for="teachersName-@teacherModel.Id">Имя</label>
+                </div>
+                <div class="col-md-8 teacher-current-info-@teacherModel.Id">
+                    <p id="teachersCurrentName-@teacherModel.Id">@teacherModel.Name</p>
+                </div>
+                <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
+                    <input type="text" value="@teacherModel.Name" class="form-control" id="teachersName-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-4 teacher-info-label">
+                    <label for="teachersSecondName-@teacherModel.Id">Отчество</label>
+                </div>
+                <div class="col-md-8 teacher-current-info-@teacherModel.Id">
+                    <p id="teachersCurrentSecondName-@teacherModel.Id">@teacherModel.SecondName</p>
+                </div>
+                <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
+                    <input type="text" value="@teacherModel.SecondName" class="form-control" id="teachersSecondName-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-4 teacher-info-label">
+                    <label for="teachersEducation-@teacherModel.Id">Образование</label>
+                </div>
+                <div class="col-md-8 teacher-current-info-@teacherModel.Id">
+                    <p id="teachersCurrentEducation-@teacherModel.Id">@educationName</p>
+                </div>
+                <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
+                    <select type="text" class="form-select" id="teachersEducation-@teacherModel.Id">
+                        @{
+                            foreach (var educationLevel in Model.TeachersEducationLevels)
+                            {
+                                var isSelected = ((int)teacherModel.TeacherEducation).ToString()==educationLevel.Value?"selected":"";
+                        @:<option @isSelected value="@educationLevel.Value">@educationLevel.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-4 teacher-info-label">
+                    <label for="teachersCategory-@teacherModel.Id">Категория</label>
+                </div>
+                <div class="col-md-8 teacher-current-info-@teacherModel.Id">
+                    <p id="teachersCurrentCategory-@teacherModel.Id">@categoryName</p>
+                </div>
+                <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
+                    <select type="text" class="form-select" id="teachersCategory-@teacherModel.Id">
+                        @{
+                        foreach (var category in Model.TeachersCategory)
+                        {
+                            var isSelected = ((int)teacherModel.TeacherCategory).ToString()==category.Value?"selected":"";
+                        @:<option @isSelected value="@category.Value">@category.Text</option>
+                        }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-4 teacher-info-label">
+                    <label for="teachersTariffCategory-@teacherModel.Id">Тарифный разряд</label>
+                </div>
+                <div class="col-md-8 teacher-current-info-@teacherModel.Id">
+                    <p id="teachersCurrentTariffCategory-@teacherModel.Id">@teacherModel.TariffCategory</p>
+                </div>
+                <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
+                    <select type="text" class="form-select" id="teachersTariffCategory-@teacherModel.Id">
+                        @{
+                        foreach (var tariffCategory in Model.TeachersTariffCategory)
+                        {
+                            var isSelected = teacherModel.TariffCategory.ToString()==tariffCategory.Value?"selected":"";
+                        @: <option @isSelected value="@tariffCategory.Value">@tariffCategory.Text</option>
+                        }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-4 teacher-info-label">
+                    <label for="teachersExperienceFrom-@teacherModel.Id">Начало карьеры</label>
+                </div>
+                <div class="col-md-8 teacher-current-info-@teacherModel.Id">
+                    <p id="teachersCurrentExperienceFrom-@teacherModel.Id">@teacherModel.ExperienceFrom.ToString("dd.MM.yyyy")</p>
+                </div>
+                <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
+                    <input value="20.08.2015" class="teachers-datepicker" type="text" id="teachersExperienceFrom-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-4 teacher-info-label">
+                    <label for="teachersDegree-@teacherModel.Id">Звание</label>
+                </div>
+                <div class="col-md-8 teacher-current-info-@teacherModel.Id">
+                    <p id="teachersCurrentDegree-@teacherModel.Id">@degreeName</p>
+                </div>
+                <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
+                    <select type="text" class="form-select" id="teachersDegree-@teacherModel.Id">
+                        @{
+                        foreach (var degree in Model.TeachersDegrees)
+                        {
+                            var isSelected = ((int)teacherModel.TeacherDegree).ToString()==degree.Value?"selected":"";
+                        @:<option @isSelected value="@degree.Value">@degree.Text</option>
+                        }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-4 teacher-info-label">
+                    <label for="teachersSubjects-@teacherModel.Id">Предметы</label>
+                </div>
+                <div class="col-md-8 teacher-current-info-@teacherModel.Id">
+                    <p id="teachersCurrentSubjects-@teacherModel.Id">@teacherModel.TeacherSubjectList</p>
+                </div>
+                <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
+                    <select class="form-select teachers-multiple-select" id="teachersSubjects-@teacherModel.Id" data-placeholder="Choose anything" multiple>
+                        @{
+                        foreach (var subject in Model.TeachersSubjects)
+                        {
+                            var isSelected = "";
+                            if (teacherModel.SubjectIds.Any(ts=>ts==int.Parse(subject.Value)))
+                            {
+                                isSelected = "selected";
+                            }
+                        @: <option @isSelected value="@subject.Value">@subject.Text</option>
+                        }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-4 teacher-info-label">
+                    <label for="teachersClass-@teacherModel.Id">Классное руководство</label>
+                </div>
+                <div class="col-md-8 teacher-current-info-@teacherModel.Id">
+                    <p id="teachersCurrentClass-@teacherModel.Id">@teacherStudyClass</p>
+                </div>
+                <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
+                    <select type="text" class="form-select" id="teachersClass-@teacherModel.Id">
+                        @{
+                            foreach (var studyClass in Model.TeachersStudyClasses)
+                            {
+                                var isSelected = teacherModel.StudyClassId== int.Parse(studyClass.Value) ? "selected" : "";
+                                var isAvailable = Model.TeacherList.Any(t => t.StudyClassId == int.Parse(studyClass.Value) &&
+                                                                             teacherModel.StudyClassId != int.Parse(studyClass.Value))
+                                    ? "disabled"
+                                    : "";
+                                @: <option @isSelected @isAvailable value="@studyClass.Value">@studyClass.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-4 teacher-info-label">
+                    <label for="teachersClassroom-@teacherModel.Id">Кабинет</label>
+                </div>
+                <div class="col-md-8 teacher-current-info-@teacherModel.Id">
+                    <p id="teachersCurrentClassroom-@teacherModel.Id">@teacherClassroom</p>
+                </div>
+                <div class="col-md-8 teacher-info-input-@teacherModel.Id hide">
+                    <select type="text" class="form-select" id="teachersClassroom-@teacherModel.Id">
+                        @{
+                            foreach (var classroom in Model.TeachersClassroom)
+                            {
+                                var isSelected = teacherModel.ClassroomId.ToString() == classroom.Value ? "selected" : "";
+                                @:<option @isSelected value="@classroom.Value">@classroom.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersIsDirector-@teacherModel.Id">Директор</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsDirector-@teacherModel.Id">
+                    @{
+                        var isChecked = "";
+                        if (teacherModel.IsDirector)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" @isChecked class="form-check-input" id="teachersIsDirector-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersIsHeadTeacher-@teacherModel.Id">Заместитель директора</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsHeadTeacher-@teacherModel.Id">
+                    @{
+                        isChecked = "";
+                        if (teacherModel.IsHeadTeacher)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" @isChecked class="form-check-input" id="teachersIsHeadTeacher-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersIsMentor-@teacherModel.Id">Советник по воспитанию</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsMentor-@teacherModel.Id">
+                    @{
+                        isChecked = "";
+                        if (teacherModel.IsMentor)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" @isChecked class="form-check-input" id="teachersIsMentor-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersAfterClassesTeacher-@teacherModel.Id">Воспитатель ГПД</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentAfterClassesTeacher-@teacherModel.Id">
+                    @{
+                        isChecked = "";
+                        if (teacherModel.AfterClassesTeacher)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" @isChecked class="form-check-input" id="teachersAfterClassesTeacher-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersIsPsychologist-@teacherModel.Id">Педагог-психолог</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsPsychologist-@teacherModel.Id">
+                    @{
+                        isChecked = "";
+                        if (teacherModel.IsPsychologist)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" @isChecked class="form-check-input" id="teachersIsPsychologist-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersIsSocial-@teacherModel.Id">Социальный педагог</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsSocial-@teacherModel.Id">
+                    @{
+                        isChecked = "";
+                        if (teacherModel.IsSocial)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" @isChecked class="form-check-input" id="teachersIsSocial-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersIsFacilitator-@teacherModel.Id">Педагог-организатор</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsFacilitator-@teacherModel.Id">
+                    @{
+                        isChecked = "";
+                        if (teacherModel.IsFacilitator)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" @isChecked class="form-check-input" id="teachersIsFacilitator-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersIsLibraryManager-@teacherModel.Id">Заведующий библиотекой</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsLibraryManager-@teacherModel.Id">
+                    @{
+                        isChecked = "";
+                        if (teacherModel.IsLibraryManager)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" @isChecked class="form-check-input" id="teachersIsLibraryManager-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersIsLogopedist-@teacherModel.Id">Учитель-логопед</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsLogopedist-@teacherModel.Id">
+                    @{
+                        isChecked = "";
+                        if (teacherModel.IsLogopedist)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" @isChecked class="form-check-input" id="teachersIsLogopedist-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersIsMain-@teacherModel.Id">Основной</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentIsMain-@teacherModel.Id">
+                    @{
+                        isChecked = "";
+                        if (teacherModel.IsMain)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" @isChecked class="form-check-input" id="teachersIsMain-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersMuseum-@teacherModel.Id">Школьный музей</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentMuseum-@teacherModel.Id">
+                    @{
+                        isChecked = "";
+                        if (teacherModel.Museum)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" disabled @isChecked class="form-check-input" id="teachersMuseum-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersTheater-@teacherModel.Id">Школьный театр</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentTheater-@teacherModel.Id">
+                    @{
+                        isChecked = "";
+                        if (teacherModel.Theater)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" disabled @isChecked class="form-check-input" id="teachersTheater-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersChorus-@teacherModel.Id">Школьный хор</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentChorus-@teacherModel.Id">
+                    @{
+                        isChecked = "";
+                        if (teacherModel.Chorus)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" @isChecked class="form-check-input" id="teachersChorus-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersScouts-@teacherModel.Id">Юнармия</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentScouts-@teacherModel.Id">
+                    @{
+                        isChecked = "";
+                        if (teacherModel.Scouts)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" @isChecked class="form-check-input" id="teachersScouts-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center teacher-info-row">
+                <div class="col-md-8 teacher-info-label">
+                    <label for="teachersSportClub-@teacherModel.Id">Спортклуб</label>
+                </div>
+                <div class="col-md-4 teacher-current-info-@teacherModel.Id" id="teachersCurrentSportClub-@teacherModel.Id">
+                    @{
+                        isChecked = "";
+                        if (teacherModel.SportClub)
+                        {
+                            <span class="badge rounded-pill bg-success">ДА</span>
+                            isChecked = "checked";
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill bg-danger">НЕТ</span>
+                        }
+                    }
+                </div>
+                <div class="col-md-4 teacher-info-input-@teacherModel.Id hide">
+                    <input type="checkbox" @isChecked class="form-check-input" id="teachersSportClub-@teacherModel.Id">
+                </div>
+            </div>
+            <div class="row align-items-center editSaveButtonsBlock">
+                <div class="col-md-6" id="editTeacherInfo-@teacherModel.Id" style="text-align: center">
+                    <button class="btn btn-outline-secondary btn-lg edit-teacher-info-btn" onclick="editTeacherInfo('@teacherModel.Id')"><i class="fa-solid fa-pencil"></i> Изменить</button>
+                </div>
+                <div class="col-md-6" id="deleteTeacherInfo-@teacherModel.Id" style="text-align: center">
+                    <button class="btn btn-danger btn-lg delete-teacher-info-btn" onclick="deleteTeacherInfo('@teacherModel.Id')"><i class="fa-solid fa-trash"></i> Удалить</button>
+                </div>
+                <div class="col-md-6 hide" id="saveTeacherInfo-@teacherModel.Id" style="text-align: end">
+                    <button class="btn btn-outline-success btn-lg" onclick="saveTeacherInfo('@teacherModel.Id')"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button>
+                </div>
+                <div class="col-md-6 hide" id="cancelTeacherInfo-@teacherModel.Id">
+                    <button class="btn btn-outline-danger btn-lg" onclick="cancelTeacherInfo('@teacherModel.Id')"><i class="fa-solid fa-xmark"></i> Отменить</button>
+                </div>
+            </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+    }
+}
+</div>
+<div class="add-button">
+    <a asp-action="CreateOrUpdateTariff" asp-route-tariffId="@Model.TariffId" id="save-teachers-info" class="btn btn-outline-danger"><i class="fa-solid fa-arrow-left"></i> Назад</a>
+</div>
+</div>
+</div>

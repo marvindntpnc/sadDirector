@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SadDirector.Domain;
+using SadDirector.Domain.TeacherInfo;
+using SadDirector.Domain.TeachingPlan;
 
 namespace SadDirector.Data;
 

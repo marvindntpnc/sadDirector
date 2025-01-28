@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SadDirector.Data;
 using SadDirector.Domain;
+using SadDirector.Domain.TeachingPlan.enums;
 using SadDirector.Factories;
 using SadDirector.Models;
 using SadDirector.Services;
@@ -38,6 +39,8 @@ public class HomeController : Controller
         return View("~/Views/CreateOrUpdateTariff.cshtml",model);
     }
 
+    #region Teachers
+
     public async Task<IActionResult> TeachersInfo(int tariffId)
     {
         var model = await _sadDirectorModelFactory.PrepareTeacherListModelAsync(tariffId);
@@ -46,19 +49,32 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateOrUpdateTeacher(TeacherModel model)
     {
-        await _sadDirectorService.CreateOrUpdateTeacherAsync(model);
-        return Json(new
+        try
         {
-            success=true
-        });
+            await _sadDirectorService.CreateOrUpdateTeacherAsync(model);
+            return Json(new
+            {
+                success=true
+            });
+        }
+        catch (Exception e)
+        {
+            return Json(new
+            {
+                success=false,
+                error=e.Message
+            });
+        }
     }
 
+    #endregion
+    
+    #region Teaching Plan
     public async Task<IActionResult> TeachingPlan(int tariffId)
     {
         var model = await _sadDirectorModelFactory.PrepareTeachingPlanModelAsync(tariffId);
         return View("~/Views/TeachingPlan.cshtml", model);
     }
-
     [HttpPost]
     public async Task<IActionResult> CreateNewStudyClass(StudyClassModel model)
     {
@@ -86,7 +102,6 @@ public class HomeController : Controller
             success = true
         });
     }
-
     [HttpPost]
     public async Task<IActionResult> DeleteSubjectProgram(int subjectId, StudyClassLevel studyLevel)
     {
@@ -96,7 +111,6 @@ public class HomeController : Controller
             success = true
         });
     }
-
     [HttpPost]
     public async Task<IActionResult> UpdateSubjectProgram(SubjectProgramModel[] subjectPrograms)
     {
@@ -116,7 +130,6 @@ public class HomeController : Controller
             success = true
         });
     }
-    
     [HttpPost]
     public async Task<IActionResult> DeleteExtraSubject(int extraSubjectId)
     {
@@ -126,7 +139,6 @@ public class HomeController : Controller
             success = true
         });
     }
-
     [HttpPost]
     public async Task<IActionResult> DeleteStudyClass(int classId)
     {
@@ -136,7 +148,6 @@ public class HomeController : Controller
             success = true
         });
     }
-
     [HttpPost]
     public async Task<IActionResult> UpdateSubjectsList(int[] requiredSubjectIds, int[] formedSubjectIds,StudyClassLevel studyLevel)
     {
@@ -146,6 +157,17 @@ public class HomeController : Controller
             success = true
         });
     }
+    #endregion
+    
+    #region Study Classes
+    
+    public async Task<IActionResult> StudyClasses()
+    {
+        return View("~/Views/StudyClasses.cshtml",new StudyClassListModel());
+    }
+    #endregion
+
+    
 
 
 }

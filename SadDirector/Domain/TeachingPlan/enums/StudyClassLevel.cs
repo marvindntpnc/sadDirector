@@ -1,4 +1,4 @@
-namespace SadDirector.Domain;
+namespace SadDirector.Domain.TeachingPlan.enums;
 
 public enum StudyClassLevel
 {

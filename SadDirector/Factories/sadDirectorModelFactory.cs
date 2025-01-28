@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SadDirector.Domain;
+using SadDirector.Domain.TeacherInfo.enums;
+using SadDirector.Domain.TeachingPlan;
+using SadDirector.Domain.TeachingPlan.enums;
 using SadDirector.Models;
 using SadDirector.Models.Lists;
 using SadDirector.Services;
@@ -14,6 +17,7 @@ public class SadDirectorModelFactory
     {
         _sadDirectorService = sadDirectorService;
     }
+    
     public async Task<TariffListModel> PrepareTariffListModelAsync()
     {
         var tariffList = await _sadDirectorService.GetTariffListAsync();
@@ -47,6 +51,9 @@ public class SadDirectorModelFactory
         };
         return model;
     }
+
+    #region Teachers
+
     public async Task<TeacherListModel> PrepareTeacherListModelAsync(int tariffId)
     {
         var teacherList = await _sadDirectorService.GetTeacherListAsync();
@@ -55,8 +62,127 @@ public class SadDirectorModelFactory
             TariffId = tariffId,
             TeacherList = new List<TeacherModel>()
         };
+        
+        model.TeachersClassroom.Add(new SelectListItem
+        {
+            Value = "0",
+            Text = "Нет"
+        });
+        model.TeachersClassroom.Add(new SelectListItem
+        {
+            Value = "1",
+            Text = "Спортзал"
+        });
+        model.TeachersClassroom.Add(new SelectListItem
+        {
+            Value = "2",
+            Text = "Библиотека"
+        });
+        for (int i = 1; i < 16; i++)
+        {
+            model.TeachersTariffCategory.Add(new SelectListItem
+            {
+                Value = i.ToString(),
+                Text = i.ToString()
+            });
+        }
+        model.TeachersDegrees.Add(new SelectListItem
+        {
+            Value = "0",
+            Text = "Нет"
+        });
+        foreach (TeacherDegree degree in Enum.GetValues(typeof(TeacherDegree)))
+        {
+            string degreeName = string.Empty;
+            
+            switch (degree)
+            {
+                case TeacherDegree.Director:
+                    degreeName = "Директор";
+                    break;
+                case TeacherDegree.Methodist:
+                    degreeName = "Методист";
+                    break;
+            }
+            model.TeachersDegrees.Add(new SelectListItem
+            {
+                Value = ((int)degree).ToString(),
+                Text = degreeName
+            });
+        }
+
+        foreach (TeacherCategory category in Enum.GetValues(typeof(TeacherCategory)))
+        {
+            string categoryName = string.Empty;
+            
+            switch (category)
+            {
+                case TeacherCategory.First:
+                    categoryName = "Первая";
+                    break;
+                case TeacherCategory.Higher:
+                    categoryName = "Высшая";
+                    break;
+                case TeacherCategory.Specialist:
+                    categoryName = "Специалист";
+                    break;
+            }
+            model.TeachersCategory.Add(new SelectListItem
+            {
+                Value = ((int)category).ToString(),
+                Text = categoryName
+            });
+        }
+
+        foreach (TeacherEducation education in Enum.GetValues(typeof(TeacherEducation)))
+        {
+            string educationName = string.Empty;
+            
+            switch (education)
+            {
+                case TeacherEducation.Bachelor:
+                    educationName = "Бакалавр";
+                    break;
+                case TeacherEducation.MediumSpecial:
+                    educationName = "Среднее-специальное";
+                    break;
+                case TeacherEducation.Higher:
+                    educationName = "Высшее";
+                    break;
+            }
+            model.TeachersEducationLevels.Add(new SelectListItem
+            {
+                Value = ((int)education).ToString(),
+                Text = educationName
+            });
+        }
+        
+        var subjectList=await _sadDirectorService.GetSubjectListAsync();
+        var studyClassesList = await _sadDirectorService.GetStudyClassListAsync();
+
+        foreach (var subject in subjectList)
+        {
+            model.TeachersSubjects.Add(new SelectListItem
+            {
+                Value = subject.Id.ToString(),
+                Text = subject.Name,
+                Selected = false
+            });
+        }
+
+        foreach (var studyClass in studyClassesList)
+        {
+            model.TeachersStudyClasses.Add(new SelectListItem
+            {
+                Value = studyClass.Id.ToString(),
+                Text = studyClass.Name
+            });
+        }
+
         foreach (var teacher in teacherList)
         {
+            var teacherSubjects = await _sadDirectorService.GetTeacherSubjects(teacher.Id);
+
             model.TeacherList.Add(new TeacherModel
             {
                 Id = teacher.Id,
@@ -85,12 +211,17 @@ public class SadDirectorModelFactory
                 Chorus=teacher.Chorus,
                 Scouts=teacher.Scouts,
                 SportClub=teacher.SportClub,
-                
-                
+                SubjectIds = teacherSubjects.Select(x => x.SubjectId).ToList(),
+                TeacherSubjectList = string.Join(", " , teacherSubjects.Select(x => _sadDirectorService.GetSubjectNameByIdAsync(x.SubjectId).Result))
             });
         }
         return model;
     }
+
+    #endregion
+
+    #region Teaching Plan
+
     public async Task<TeachingPlanModel> PrepareTeachingPlanModelAsync(int tariffId)
     {
         var model = new TeachingPlanModel
@@ -104,7 +235,6 @@ public class SadDirectorModelFactory
         model.ExtraPrograms = await PrepareExtraProgramsModel();
         return model;
     }
-
     private async Task<StudyLevelModel> PrepareStudyLevelModel(StudyClassLevel studyClassLevel)
     {
         var model = new StudyLevelModel
@@ -267,7 +397,6 @@ public class SadDirectorModelFactory
 
         return model;
     }
-
     private async Task<ExtraProgramModel> PrepareExtraProgramsModel()
     {
         var model = new ExtraProgramModel();
@@ -321,4 +450,12 @@ public class SadDirectorModelFactory
         }
         return model;
     }
+
+    #endregion
+
+    #region Study Classes
+
+    
+
+    #endregion
 }

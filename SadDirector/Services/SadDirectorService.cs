@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using SadDirector.Data;
 using SadDirector.Domain;
+using SadDirector.Domain.TeacherInfo;
+using SadDirector.Domain.TeachingPlan;
+using SadDirector.Domain.TeachingPlan.enums;
 using SadDirector.Models;
 
 namespace SadDirector.Services;
@@ -16,7 +19,7 @@ public class SadDirectorService
 
     public async Task<Tariff?> GetTariffByIdAsync(int id)
     {
-       return await _dbContext.Tariffs.FirstOrDefaultAsync(t=>t.Id==id);
+        return await _dbContext.Tariffs.FirstOrDefaultAsync(t=>t.Id==id);
     }
     public async Task<List<Tariff>> GetTariffListAsync()
     {
@@ -33,11 +36,24 @@ public class SadDirectorService
         await _dbContext.SaveChangesAsync();
         return tariff;
     }
-    
+
+    public async Task<string?> GetSubjectNameByIdAsync(int studyClassId)
+    {
+        return _dbContext.StudySubjects.FirstOrDefault(cs=>cs.Id==studyClassId)?.Name;
+    }
+
+    #region Teachers
+
     public async Task<List<Teacher>> GetTeacherListAsync()
     {
         return await _dbContext.Teachers.ToListAsync();
     }
+
+    public async Task<List<TeacherSubjects>> GetTeacherSubjects(int teacherId)
+    {
+        return await _dbContext.TeachersSubjects.Where(t => t.TeacherId == teacherId).ToListAsync();
+    }
+
     public async Task CreateOrUpdateTeacherAsync(TeacherModel model)
     {
         var teacher =await _dbContext.Teachers.FirstOrDefaultAsync(t => t.Id == model.Id);
@@ -82,9 +98,29 @@ public class SadDirectorService
             _dbContext.Teachers.Update(teacher);
         }
         await _dbContext.SaveChangesAsync();
+        
+        var currentTeacherSubjects=_dbContext.TeachersSubjects.Where(t=>t.TeacherId == teacher.Id).ToList();
+        foreach (var teachersSubject in currentTeacherSubjects)
+        {
+            _dbContext.TeachersSubjects.Remove(teachersSubject);
+        }
+
+        foreach (var subjectId in model.SubjectIds)
+        {
+            _dbContext.TeachersSubjects.Add(new TeacherSubjects
+            {
+                TeacherId = teacher.Id,
+                SubjectId = subjectId
+            });
+        }
+        await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<List<StudySubject>> GetSubjectListAsync(StudyClassLevel? studyLevel=null)
+    #endregion
+
+    #region Teaching Plan
+
+     public async Task<List<StudySubject>> GetSubjectListAsync(StudyClassLevel? studyLevel=null)
     {
         if (studyLevel != null)
         {
@@ -105,22 +141,18 @@ public class SadDirectorService
     {
         return await _dbContext.StudyClasses.ToListAsync();
     }
-
     public async Task<List<ExtraSubject?>> GetExtraSubjectListAsync()
     {
         return await _dbContext.ExtraSubjects.ToListAsync();
     }
-
     public async Task<ExtraSubject?> GetExtraSubjectByIdAsync(int extraSubjectId)
     {
         return await _dbContext.ExtraSubjects.FirstOrDefaultAsync(es=>es.Id == extraSubjectId);
     }
-
     public async Task<List<ExtraSubjectProgram>> GetExtraSubjectProgramByExtraSubjectIdAsync(int extraSubjectId)
     {
         return await _dbContext.ExtraSubjectPrograms.Where(es => es.ExtraSubjectId == extraSubjectId).ToListAsync();
     }
-
     public async Task AddNewStudyClassAsync(StudyClassModel model)
     {
         var studyClass = new StudyClass
@@ -263,17 +295,14 @@ public class SadDirectorService
         }
         await _dbContext.SaveChangesAsync();
     }
-
     public async Task<List<TeachingProgram>> GetStudyClassTeachingProgramAsync(int studyClassId)
     {
         return await _dbContext.TeachingPrograms.Where(tp => tp.StudyClassId == studyClassId).ToListAsync();
     }
-    
     public async Task<List<ExtraSubjectProgram>> GetStudyClassExtraProgramAsync(int studyClassId)
     {
         return await _dbContext.ExtraSubjectPrograms.Where(tp => tp.StudyClassId == studyClassId).ToListAsync();
     }
-
     public async Task DeleteSubjectProgramAsync(int subjectId, StudyClassLevel studyLevel)
     {
         var subjectPrograms=await _dbContext.TeachingPrograms.Where(tp => tp.SubjectId == subjectId && tp.StudyClassLevel==studyLevel).ToListAsync();
@@ -284,7 +313,6 @@ public class SadDirectorService
         }
         await _dbContext.SaveChangesAsync();
     }
-
     public async Task UpdateSubjectProgramAsync(SubjectProgramModel[] subjectPrograms)
     {
         foreach (var subjectProgram in subjectPrograms)
@@ -316,7 +344,6 @@ public class SadDirectorService
             await _dbContext.SaveChangesAsync();
         }
     }
-
     public async Task DeleteExtraSubjectAsync(int extraSubjectId)
     {
         var extraSubject=await GetExtraSubjectByIdAsync(extraSubjectId);
@@ -329,7 +356,6 @@ public class SadDirectorService
         
         await _dbContext.SaveChangesAsync();
     }
-
     public async Task DeleteStudyClassAsync(int classId)
     {
         var studyClass=await _dbContext.StudyClasses.FirstOrDefaultAsync(sc=>sc.Id==classId);
@@ -339,7 +365,6 @@ public class SadDirectorService
             await _dbContext.SaveChangesAsync();
         }
     }
-
     public async Task UpdateSubjectsListAsync(int[] requiredSubjectIds, int[] formedSubjectIds, StudyClassLevel studyLevel)
     {
         var subjectList = await GetSubjectListAsync();
@@ -486,4 +511,12 @@ public class SadDirectorService
         }
         await _dbContext.SaveChangesAsync();
     }
+
+    #endregion
+
+    #region StudyClasses
+
+    
+
+    #endregion
 }
