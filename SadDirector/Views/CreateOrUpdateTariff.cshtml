@@ -10,7 +10,7 @@
             <div class="row info-buttons-block">
                 <a asp-action="TeachersInfo" asp-route-tariffId="@Model.Id" class="btn btn-outline-warning">Учителя</a>
                 <a asp-action="TeachingPlan" asp-route-tariffId="@Model.Id" type="button" class="btn btn-outline-info">Учебный план</a>
-                <a href="studyClasses.html" type="button" class="btn btn-outline-success">Классы</a>
+                <a asp-action="StudyClasses" asp-route-tariffId="@Model.Id" type="button" class="btn btn-outline-success">Классы</a>
             </div>
             <table id="tariffication-table">
                 <tr>

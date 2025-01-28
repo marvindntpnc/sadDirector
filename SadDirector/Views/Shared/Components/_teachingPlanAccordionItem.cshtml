@@ -139,7 +139,7 @@
                             @{
                                 foreach (var studyClass in Model.StudyClassList)
                                 {
-                                    var currentHours = Model.RequiredSubjectProgramModel.FirstOrDefault(ch => ch.SubjectId == subject.Id && ch.StudyClassId == studyClass.Id).Hours;
+                                    int  currentHours = Model.RequiredSubjectProgramModel.FirstOrDefault(ch => ch.SubjectId == subject.Id && ch.StudyClassId == studyClass.Id)?.Hours ?? 0;
                                     <td class="subject-plan-cell" data-required-subject-id="@subject.Id">
                                         <p class="current-@studyClassLevel-required-subject-@subject.Id" id="required-subject-@subject.Id-@studyClass.Id">@currentHours</p>
                                         <input type="number" min="0" value="@currentHours" class="form-control @studyClassLevel-required-subject-input-@subject.Id hide" id="required-subjectId-classId-@subject.Id-@studyClass.Id">

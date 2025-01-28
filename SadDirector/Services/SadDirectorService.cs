@@ -326,6 +326,19 @@ public class SadDirectorService
                 teachingProgram.Hours = subjectProgram.Hours;
                 _dbContext.Update(teachingProgram);
             }
+            else
+            {
+                var studyClass=await _dbContext.StudyClasses.FirstOrDefaultAsync(sc=>sc.Id==subjectProgram.StudyClassId);
+                _dbContext.TeachingPrograms.Add(new TeachingProgram
+                {
+                    StudyClassId = subjectProgram.StudyClassId,
+                    SubjectId = subjectProgram.SubjectId,
+                    IsRequired = subjectProgram.IsRequired,
+                    Hours = subjectProgram.Hours,
+                    StudyClassLevel = studyClass.StudyClassLevel
+                });
+            }
+            
             await _dbContext.SaveChangesAsync();
         }
     }

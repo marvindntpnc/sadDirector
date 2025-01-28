@@ -364,7 +364,7 @@ public class SadDirectorModelFactory
                     teachingProgramList.FirstOrDefault(sh => sh.SubjectId == subject.Id && sh.IsRequired);
                 if (requiredSubjectHours != null)
                 {
-                    model.RequiredSubjectList.FirstOrDefault(s => s.Id == subject.Id).SubjectHoursTotal +=
+                    model.RequiredSubjectList.FirstOrDefault(s => s.Id == subject.Id)!.SubjectHoursTotal +=
                         requiredSubjectHours.Hours;
                     requiredSubjectProgram.Add(new SubjectProgramModel
                     {
@@ -380,7 +380,7 @@ public class SadDirectorModelFactory
                     teachingProgramList.FirstOrDefault(sh => sh.SubjectId == subject.Id && !sh.IsRequired);
                 if (formedSubjectHours != null)
                 {
-                    model.FormedSubjectList.FirstOrDefault(s => s.Id == subject.Id).SubjectHoursTotal +=
+                    model.FormedSubjectList.FirstOrDefault(s => s.Id == subject.Id)!.SubjectHoursTotal +=
                         formedSubjectHours.Hours;
                     formedSubjectProgram.Add(new SubjectProgramModel
                     {
@@ -405,7 +405,7 @@ public class SadDirectorModelFactory
         {
             model.ExtraSubjects.Add(new SubjectModel
             {
-                Name = subject.FullName,
+                Name = subject!.FullName,
                 ShortName = subject.ShortName,
                 Id = subject.Id,
                 SubjectHoursTotal = 0
@@ -432,16 +432,16 @@ public class SadDirectorModelFactory
             foreach (var subject in extraSubjectList)
             {
                 var extraSubjectHours =
-                    extraProgramList.FirstOrDefault(sh => sh.ExtraSubjectId == subject.Id);
+                    extraProgramList.FirstOrDefault(sh => sh.ExtraSubjectId == subject!.Id);
                 if (extraSubjectHours != null)
                 {
-                    model.ExtraSubjects.FirstOrDefault(s => s.Id == subject.Id).SubjectHoursTotal +=
+                    model.ExtraSubjects.FirstOrDefault(s => s.Id == subject!.Id)!.SubjectHoursTotal +=
                         extraSubjectHours.Hours;
                     extraSubjectProgram.Add(new SubjectProgramModel
                     {
                         StudyClassId = studyClass.Id,
                         Hours = extraSubjectHours.Hours,
-                        SubjectId = subject.Id
+                        SubjectId = subject!.Id
                     });
                 }
             }
@@ -455,7 +455,13 @@ public class SadDirectorModelFactory
 
     #region Study Classes
 
-    
-
+    public async Task<StudyClassListModel> PrepareStudyClassListModel(int tariffId)
+    {
+        var model = new StudyClassListModel
+        {
+            TariffId = tariffId
+        };
+        return model;
+    }
     #endregion
 }
