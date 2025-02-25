@@ -6,4 +6,5 @@ public class SubjectModel
     public string Name { get; set; }
     public string ShortName { get; set; }
     public int SubjectHoursTotal { get; set; }
+    public bool IsSeparated { get; set; }
 }

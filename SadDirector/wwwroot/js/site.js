@@ -459,6 +459,7 @@ function saveSubjectHours(subjectId, studyLevel, isRequired){
     if(isRequired)
         required='required'
 
+    var isSeparated=$('#'+required+'-subjectId-isSeparated-'+subjectId).prop('checked')
     let subjectProgram=[]
     $('.'+studyLevel+'-'+required+'-subject-input-'+subjectId).each(function (){
         const elementId=$(this).attr('id')
@@ -474,7 +475,8 @@ function saveSubjectHours(subjectId, studyLevel, isRequired){
         subjectProgram.push(studyClassSubjectProgram)
     })
     var postData = {
-        subjectPrograms:subjectProgram
+        subjectPrograms:subjectProgram,
+        isSeparated:isSeparated
     };
     const url=window.location.origin
     $.ajax({
@@ -484,7 +486,7 @@ function saveSubjectHours(subjectId, studyLevel, isRequired){
         data: postData,
         success: function (data, textStatus, jqXHR) {
             if (data.success) {
-                cancelSubjectHours(subjectId, studyLevel, isRequired)
+                location.reload()
             }
         },
         complete: function (jqXHR, textStatus) {
@@ -602,6 +604,9 @@ function editClassSubjectHours(subjectId, classId, isRequired){
     if(isRequired)
         required='required'
 
+    $('#'+required+'-current-student-count-'+classId).addClass('hide')
+    $('#'+required+'-input-student-count-'+classId).removeClass('hide')
+    
     $('.'+required+'-subject-'+subjectId).each(function (){
         $(this).addClass('hide')
     })
@@ -613,24 +618,87 @@ function editClassSubjectHours(subjectId, classId, isRequired){
     $('#save-'+required+'-subject-'+subjectId+'-'+classId).removeClass('hide')
     $('#cancel-'+required+'-subject-'+subjectId+'-'+classId).removeClass('hide')
 }
-function saveClassSubjectHours(subjectId, classId, isRequired){
+function saveClassSubjectHours(subjectId, classId, isRequired,isExtra=false){
     let required='formed'
     if(isRequired)
         required='required'
 
-    const teacherName=$('#input-'+required+'-subject-class-'+subjectId+'-'+classId+' option:selected').text();
-    $('#'+required+'-subject-class-'+subjectId+'-'+classId).text(teacherName);
+    let planHours=+$('#'+required+'-plan-hours-subject-class-'+subjectId+'-'+classId).text()
+    let currentHoursMain=+$('#input-'+required+'-subject-hours-'+subjectId+'-'+classId+'-p1').val();
+    let teacherId=+$('#input-'+required+'-subject-class-'+subjectId+'-'+classId+'-p1 option:selected').val();
+    const currentHours=+$('#input-'+required+'-subject-hours-'+subjectId+'-'+classId+'-p2').val();
+    
+    if (isExtra){
+        planHours= +$('#extra-plan-hours-subject-class-'+subjectId+'-'+classId).text();
+        currentHoursMain= +$('#input-extra-subject-hours-'+subjectId+'-'+classId).val();
+        teacherId=+$('#input-extra-subject-class-'+subjectId+'-'+classId+' option:selected').val()
+    }
+        
 
-    const subjectHours=$('#input-'+required+'-subject-hours-'+subjectId+'-'+classId).val()
-    $('#'+required+'-subject-hours-'+subjectId+'-'+classId).text(subjectHours);
+    if (planHours<currentHoursMain){
+        return alert('Количество часов больше чем предусмотрено планом')
+    }
+    
+    if ($('input-'+required+'-subject-hours-'+subjectId+'-'+classId+'-p2')!=null){
+        if (planHours<currentHours){
+            return alert('Количество часов больше чем предусмотрено планом')
+        }
+    }
+    
+    const studentCount= $('#'+required+'-input-student-count-'+classId).val()
+    $('#'+required+'-current-student-count-'+classId).text(studentCount);
 
-    cancelClassSubjectHours(subjectId, classId, isRequired)
+    let programs=[];
+    let subjectProgramMain={
+        SubjectId:subjectId,
+        TeacherId:teacherId,
+        CurrentHours:currentHoursMain,
+        IsMain:true,
+    }
+    programs.push(subjectProgramMain);
+    
+    if ($('input-'+required+'-subject-hours-'+subjectId+'-'+classId+'-p2')!=null){
+        let subjectProgram={
+            SubjectId:subjectId,
+            TeacherId:$('#input-'+required+'-subject-class-'+subjectId+'-'+classId+'-p2 option:selected').val(),
+            CurrentHours:currentHours,
+            IsMain:false,
+        }
+        programs.push(subjectProgram);
+    }
+    
+    var postData = {
+        model:programs,
+        studyClassId:classId,
+        studentsCount:studentCount,
+        isRequired:isRequired,
+        isExtra:isExtra,
+    };
+    const url=window.location.origin
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url: url+'/Home/UpdateStudyClassSubjectInfo',
+        data: postData,
+        success: function (data, textStatus, jqXHR) {
+            if (data.success) {
+                cancelClassSubjectHours(subjectId, classId, isRequired)
+                location.reload()
+            }
+        },
+        complete: function (jqXHR, textStatus) {
+
+        }
+    });
 }
 function cancelClassSubjectHours(subjectId, classId, isRequired){
     let required='formed'
     if(isRequired)
         required='required'
 
+    $('#'+required+'-current-student-count-'+classId).removeClass('hide')
+    $('#'+required+'-input-student-count-'+classId).addClass('hide')
+    
     $('.'+required+'-subject-'+subjectId).each(function (){
         $(this).removeClass('hide')
     })

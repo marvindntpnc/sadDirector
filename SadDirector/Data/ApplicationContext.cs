@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SadDirector.Domain;
+using SadDirector.Domain.StudyClasses;
 using SadDirector.Domain.TeacherInfo;
 using SadDirector.Domain.TeachingPlan;
 
@@ -11,7 +12,7 @@ public class ApplicationContext : DbContext
         : base(options)
     {
         //Database.EnsureDeleted();
-        Database.EnsureCreated();  
+        //Database.EnsureCreated();  
     }
     public DbSet<Teacher> Teachers { get; set; } = null!;
     public DbSet<Tariff> Tariffs { get; set; } = null!;
@@ -21,4 +22,5 @@ public class ApplicationContext : DbContext
     public DbSet<TeachingProgram> TeachingPrograms { get; set; } = null!;
     public DbSet<ExtraSubject?> ExtraSubjects { get; set; } = null!;
     public DbSet<ExtraSubjectProgram> ExtraSubjectPrograms { get; set; } = null!;
+    public DbSet<SubjectInfo> SubjectInfos { get; set; } = null!;
 }

@@ -111,7 +111,7 @@
                 @{
                     var requiredTotalBySubjects = 0;
                     var formedTotalBySubjects = 0;
-                    var colspan = Model.StudyClassList.Count + 3;
+                    var colspan = Model.StudyClassList.Count + 4;
 
                     <tr id="@studyClassLevel-header-row">
                         <th scope="col">Учебный предмет</th>
@@ -124,6 +124,7 @@
                                 <p id="study-class-@studyClass.Id">@studyClass.Name</p>
                             </th>
                         }
+                        <th scope="col">Разбивка на подгруппы</th>
                         <th scope="col">Итого</th>
                         <th scope="col">Изменить / Удалить</th>
                     </tr>
@@ -146,6 +147,22 @@
                                     </td>
                                 }
                             }
+                            <th>
+                                @{
+                                    var isChecked = "";
+                                    if (subject.IsSeparated)
+                                    {
+                                        isChecked = "checked";
+                                        <span class="badge rounded-pill bg-success current-@studyClassLevel-required-subject-@subject.Id">ДА</span>
+                                       
+                                    }
+                                    else
+                                    {
+                                        <span class="badge rounded-pill bg-danger current-@studyClassLevel-required-subject-@subject.Id">НЕТ</span>
+                                    }
+                                }
+                                <input type="checkbox" @isChecked class="form-check-input @studyClassLevel-required-subject-input-@subject.Id hide" id="required-subjectId-isSeparated-@subject.Id">
+                            </th>
                             <th id="@studyClassLevel-subject-@subject.Id-total">@subject.SubjectHoursTotal</th>
                             <td><button class="btn btn-outline-secondary" id="edit-@studyClassLevel-required-subject-@subject.Id" onclick="editSubjectHours('@subject.Id','@studyClassLevel',true)"><i class="fa-solid fa-pencil"></i>Изменить</button>
                                 <button class="btn btn-danger delete-teacher-info-btn" id="delete-@studyClassLevel-required-subject-@subject.Id" onclick="deleteSubjectProgram('@subject.Id','@studyClassLevel',true)"><i class="fa-solid fa-trash"></i> Удалить</button>
@@ -190,6 +207,22 @@
                                     </td>
                                 }
                             }
+                            <th>
+                                @{
+                                    var isChecked = "";
+                                    if (subject.IsSeparated)
+                                    {
+                                        isChecked = "checked";
+                                        <span class="badge rounded-pill bg-success current-@studyClassLevel-formed-subject-@subject.Id">ДА</span>
+
+                                    }
+                                    else
+                                    {
+                                        <span class="badge rounded-pill bg-danger current-@studyClassLevel-formed-subject-@subject.Id">НЕТ</span>
+                                    }
+                                }
+                                <input type="checkbox" @isChecked class="form-check-input @studyClassLevel-formed-subject-input-@subject.Id hide" id="formed-subjectId-isSeparated-@subject.Id">
+                            </th>
                             <th id="@studyClassLevel-subject-@subject.Id-total">@subject.SubjectHoursTotal</th>
                             <td>
                                 <button class="btn btn-outline-secondary" id="edit-@studyClassLevel-formed-subject-@subject.Id" onclick="editSubjectHours('@subject.Id','@studyClassLevel',false)"><i class="fa-solid fa-pencil"></i>Изменить</button>

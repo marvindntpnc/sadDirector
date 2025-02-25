@@ -4,6 +4,7 @@ public class StudySubject
 {
     public int Id { get; set; }
     public string Name { get; set; }
+    public bool IsSeparated { get; set; }
     public bool AssignAsRequiredToBeginners { get; set; }
     public bool AssignAsRequiredToMiddle { get; set; }
     public bool AssignAsRequiredToHigh { get; set; }

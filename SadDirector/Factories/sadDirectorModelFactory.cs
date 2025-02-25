@@ -322,7 +322,8 @@ public class SadDirectorModelFactory
             {
                 Name = subject.Name,
                 Id = subject.Id,
-                SubjectHoursTotal = 0
+                SubjectHoursTotal = 0,
+                IsSeparated = subject.IsSeparated
             });
         }
         foreach (var subject in formedSubjects)
@@ -331,7 +332,8 @@ public class SadDirectorModelFactory
             {
                 Name = subject.Name,
                 Id = subject.Id,
-                SubjectHoursTotal = 0
+                SubjectHoursTotal = 0,
+                IsSeparated = subject.IsSeparated
             });
         }
 
@@ -461,6 +463,114 @@ public class SadDirectorModelFactory
         {
             TariffId = tariffId
         };
+        
+        var studyClassList = await _sadDirectorService.GetStudyClassListAsync();
+        foreach (var studyClass in studyClassList)
+        {
+            var studyClassInfo = new StudyClassInfoModel
+            {
+                StudyClassId = studyClass.Id,
+                StudyClassName = studyClass.Name,
+                StudentCount = studyClass.StudentCount
+            };
+            var studyClassSubjectList=await _sadDirectorService.GetStudyClassTeachingProgramAsync(studyClass.Id);
+            foreach (var program in studyClassSubjectList)
+            {
+                var subjectInfoList = await _sadDirectorService.GetStudyClassSubjectInfo(studyClass.Id, program.SubjectId, program.IsRequired);
+                var subjectInfo = new SubjectInfoModel();
+                if (subjectInfoList.Count>1)
+                {
+                    var mainPart = subjectInfoList.FirstOrDefault(info => info.IsMainPart);
+                    var secondaryPart = subjectInfoList.FirstOrDefault(info => !info.IsMainPart);
+
+                    subjectInfo.SubjectId = program.SubjectId;
+                    subjectInfo.CurrentHours = mainPart.CurrentHours;
+                    subjectInfo.IsSeparated =
+                        (await _sadDirectorService.GetSubjectByIdAsync(program.SubjectId))!.IsSeparated &&
+                        studyClass.StudentCount >= 25;
+                    subjectInfo.SubjectName =
+                        await _sadDirectorService.GetSubjectNameByIdAsync(program.SubjectId) ?? "";
+                    subjectInfo.PlanHours = program.Hours;
+                    subjectInfo.TeacherId = mainPart.TeacherId;
+                    subjectInfo.TeacherName =
+                        await _sadDirectorService.GetTeacherFullNameByIdAsync(mainPart.TeacherId) ?? "";
+                    subjectInfo.CurrentHoursSecondary=secondaryPart.CurrentHours;
+                    subjectInfo.TeacherNameSecondary=await _sadDirectorService.GetTeacherFullNameByIdAsync(secondaryPart.TeacherId) ?? "";
+
+                }
+                else
+                {
+                    var info = subjectInfoList.FirstOrDefault();
+                    
+                    subjectInfo.SubjectId = program.SubjectId;
+                    subjectInfo.CurrentHours = info.CurrentHours;
+                    subjectInfo.IsSeparated = (await _sadDirectorService.GetSubjectByIdAsync(program.SubjectId))!.IsSeparated && studyClass.StudentCount>=25;
+                    subjectInfo.SubjectName = await _sadDirectorService.GetSubjectNameByIdAsync(program.SubjectId)??"";
+                    subjectInfo.PlanHours = program.Hours;
+                    subjectInfo.TeacherId = info.TeacherId;
+                    subjectInfo.TeacherName = await _sadDirectorService.GetTeacherFullNameByIdAsync(info.TeacherId)??"";
+                }
+                
+                var subjectTeacherList =
+                    await _sadDirectorService.GetTeacherListBySubjectIdAsync(program.SubjectId);
+                foreach (var teacher in subjectTeacherList)
+                {
+                    subjectInfo.AvailableTeachers.Add(new SelectListItem
+                    {
+                        Text = await _sadDirectorService.GetTeacherFullNameByIdAsync(teacher.Id) ?? "",
+                        Value = teacher.Id.ToString(),
+                        Selected = subjectInfo.TeacherId == teacher.Id
+                    });
+                }
+
+
+                if (program.IsRequired)
+                {
+                    studyClassInfo.StudyClassRequiredSubjects.Add(subjectInfo);
+                }
+                else
+                {
+                    studyClassInfo.StudyClassFormedSubjects.Add(subjectInfo);
+                }
+                
+            }
+            
+            var studyClassExtraProgram=await _sadDirectorService.GetStudyClassExtraProgramAsync(studyClass.Id);
+            foreach (var extra in studyClassExtraProgram)
+            {
+                var subjectInfoList = await _sadDirectorService.GetStudyClassSubjectInfo(studyClass.Id, extra.ExtraSubjectId,isExtra:true);
+                foreach (var info in subjectInfoList)
+                {
+                    var subjectInfo = new SubjectInfoModel
+                    {
+                        SubjectId = extra.ExtraSubjectId,
+                        CurrentHours = info.CurrentHours,
+                        IsSeparated = false,
+                        SubjectName = await _sadDirectorService.GetExtraSubjectNameByIdAsync(extra.ExtraSubjectId)??"",
+                        PlanHours = extra.Hours,
+                        TeacherId = info.TeacherId,
+                        TeacherName = await _sadDirectorService.GetTeacherFullNameByIdAsync(info.TeacherId)??"",
+                    };
+                    var subjectTeacherList =
+                        await _sadDirectorService.GetTeacherListAsync();
+                    foreach (var teacher in subjectTeacherList)
+                    {
+                        subjectInfo.AvailableTeachers.Add(new SelectListItem
+                        {
+                            Text = await _sadDirectorService.GetTeacherFullNameByIdAsync(teacher.Id)??"",
+                            Value = teacher.Id.ToString(),
+                            Selected = info.TeacherId == teacher.Id
+                        });
+                    }
+                    
+                    studyClassInfo.StudyClassExtraSubjects.Add(subjectInfo);
+                    
+                }
+            }
+            
+            model.StudyClasses.Add(studyClassInfo);
+        }
+
         return model;
     }
     #endregion

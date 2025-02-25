@@ -10,5 +10,4 @@ public class StudyClassModel
     public StudyClassLevel StudyLevel { get; set; }
     public int TotalRequiredHours { get; set; }
     public int TotalFormedHours { get; set; }
-    public int TotalExtraHours { get; set; }
 }

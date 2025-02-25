@@ -5,6 +5,7 @@ using SadDirector.Domain;
 using SadDirector.Domain.TeachingPlan.enums;
 using SadDirector.Factories;
 using SadDirector.Models;
+using SadDirector.Models.Lists;
 using SadDirector.Services;
 
 namespace SadDirector.Controllers;
@@ -112,9 +113,9 @@ public class HomeController : Controller
         });
     }
     [HttpPost]
-    public async Task<IActionResult> UpdateSubjectProgram(SubjectProgramModel[] subjectPrograms)
+    public async Task<IActionResult> UpdateSubjectProgram(SubjectProgramModel[] subjectPrograms,bool isSeparated)
     {
-        await _sadDirectorService.UpdateSubjectProgramAsync(subjectPrograms);
+        await _sadDirectorService.UpdateSubjectProgramAsync(subjectPrograms,isSeparated);
         return Json(new
         {
             success = true
@@ -161,10 +162,25 @@ public class HomeController : Controller
     
     #region Study Classes
     
-    public async Task<IActionResult> StudyClasses()
+    public async Task<IActionResult> StudyClasses(int tariffId)
     {
-        return View("~/Views/StudyClasses.cshtml",new StudyClassListModel());
+        var model = await _sadDirectorModelFactory.PrepareStudyClassListModel(tariffId);
+        return View("~/Views/StudyClasses.cshtml",model);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateStudyClassSubjectInfo(SubjectInfoModel[] model, int studyClassId,int studentsCount, bool isRequired,bool isExtra)
+    {
+        foreach (var info in model)
+        {
+            await _sadDirectorService.UpdateStudyClassSubjectInfoAsync(info,studyClassId,studentsCount,isRequired,isExtra);
+        }
+        return Json(new
+        {
+            success = true
+        });
+    }
+
     #endregion
 
     
