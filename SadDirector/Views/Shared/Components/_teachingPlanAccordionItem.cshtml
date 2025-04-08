@@ -186,6 +186,7 @@
                         if (requiredTotalBySubjects == requiredTotalByClasses)
                             requiredTotal = requiredTotalBySubjects;
                     }
+                    <th></th>
                     <th>@requiredTotal</th>
                 </tr>
                 <tr>
@@ -233,19 +234,7 @@
                         </tr>
                     }
                 }
-                @* <tr> *@
-                @*     <td>Математика</td> *@
-                @*     <td data-formed-subject-id="2"> *@
-                @*         <p class="current-beginners-formed-subject-2" id="formed-subject-2-1">5</p> *@
-                @*         <input type="number" min="0" value="5" class="form-control beginners-formed-subject-input-2 hide" id="formed-subjectId-classId-2-1"> *@
-                @*     </td> *@
-                @*     <th>10</th> *@
-                @*     <td><button class="btn btn-outline-secondary" id="edit-beginners-formed-subject-2" onclick="editSubjectHours('2','beginners', false)"><i class="fa-solid fa-pencil"></i>Изменить</button> *@
-                @*         <button class="btn btn-danger delete-teacher-info-btn" id="delete-beginners-formed-subject-2" onclick="deleteSubjectProgram('2','beginners', false)"><i class="fa-solid fa-trash"></i> Удалить</button> *@
-                @*         <button class="btn btn-outline-success hide" id="save-beginners-formed-subject-2" onclick="saveSubjectHours('2','beginners', false)"><i class="fa-regular fa-floppy-disk"></i> Сохранить</button> *@
-                @*         <button class="btn btn-outline-danger hide" id="cancel-beginners-formed-subject-2" onclick="cancelSubjectHours('2','beginners', false)"><i class="fa-solid fa-xmark"></i> Отменить</button> *@
-                @*     </td> *@
-                @* </tr> *@
+             
                 <tr>
                     <th>Итого формируемой части</th>
                     @{
@@ -260,6 +249,7 @@
                         if (formedTotalBySubjects == formedTotalByClasses)
                             formedTotal = formedTotalBySubjects;
                     }
+                    <th></th>
                     <th>@formedTotal</th>
                 </tr>
                 <tr class="class-grand-total">
@@ -273,6 +263,7 @@
                             grandTotal += studyClassTotal;
                         }
                     }
+                    <th></th>
                     <th>@grandTotal</th>
                 </tr>
             </table>

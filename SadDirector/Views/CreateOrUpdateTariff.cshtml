@@ -1,285 +1,192 @@
 ﻿@model TariffModel
 @{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Редактировать тарификацию";
+    string tariffTitle = $"{Model.Name} {Model.Period}";
 }
- <header>
-        <h1>@ViewData["Title"]</h1>
-    </header>
-    <div class="card custom-card">
-        <div class="custom-container">
-            <div class="row info-buttons-block">
-                <a asp-action="TeachersInfo" asp-route-tariffId="@Model.Id" class="btn btn-outline-warning">Учителя</a>
-                <a asp-action="TeachingPlan" asp-route-tariffId="@Model.Id" type="button" class="btn btn-outline-info">Учебный план</a>
-                <a asp-action="StudyClasses" asp-route-tariffId="@Model.Id" type="button" class="btn btn-outline-success">Классы</a>
-            </div>
-            <table id="tariffication-table">
-                <tr>
-                    <th scope="col" rowspan="2">ФИО</th>
-                    <th scope="col" colspan="3">Обязательная часть</th>
-                    <th scope="col" colspan="3">Формируемая часть</th>
-                    <th scope="col" colspan="3">Кино-Мы хотим танцевать</th>
-                    <th scope="col" colspan="3">Дайте танк(!)- Спам</th>
-                    <th scope="col" colspan="3">Гражданская оборона-Нечего терять</th>
-                    <th scope="col" colspan="3">Anacondaz-Поколение</th>
-                    <th scope="col" colspan="3">Tejon Street Corner Thieves-Whiskey</th>
-                    <th scope="col" colspan="3">Linkin Park - In the End</th>
-                    <th scope="col" colspan="3">Кровосток - Думай позитивно</th>
-                    <th scope="col" colspan="3">David Bowie - Space Oddity</th>
-                    <th scope="col" colspan="3">Morrissey-Spent the Day in Bed</th>
-                    <th scope="col" colspan="3">Red Hot Chili Peppers - Catch My Death</th>
-                    <th scope="col" rowspan="2">Итого</th>
-                </tr>
-                <tr>
-                    <th scope="col">1-4</th>
-                    <th scope="col">5-9</th>
-                    <th scope="col">10-11</th>
-                    <th scope="col">1-4</th>
-                    <th scope="col">5-9</th>
-                    <th scope="col">10-11</th>
-                    <th scope="col">1-4</th>
-                    <th scope="col">5-9</th>
-                    <th scope="col">10-11</th>
-                    <th scope="col">1-4</th>
-                    <th scope="col">5-9</th>
-                    <th scope="col">10-11</th>
-                    <th scope="col">1-4</th>
-                    <th scope="col">5-9</th>
-                    <th scope="col">10-11</th>
-                    <th scope="col">1-4</th>
-                    <th scope="col">5-9</th>
-                    <th scope="col">10-11</th>
-                    <th scope="col">1-4</th>
-                    <th scope="col">5-9</th>
-                    <th scope="col">10-11</th>
-                    <th scope="col">1-4</th>
-                    <th scope="col">5-9</th>
-                    <th scope="col">10-11</th>
-                    <th scope="col">1-4</th>
-                    <th scope="col">5-9</th>
-                    <th scope="col">10-11</th>
-                    <th scope="col">1-4</th>
-                    <th scope="col">5-9</th>
-                    <th scope="col">10-11</th>
-                    <th scope="col">1-4</th>
-                    <th scope="col">5-9</th>
-                    <th scope="col">10-11</th>
-                    <th scope="col">1-4</th>
-                    <th scope="col">5-9</th>
-                    <th scope="col">10-11</th>
-                </tr>
-                <tr>
-                    <td class="teacher-name-cell" data-teacher-id="1">
-                        <a href="editTeacherHours.html" class="btn btn-outline-secondary hide" id="TeacherId1"><i class="fa-solid fa-pencil"></i>Изменить</a>
-                        <p class="teacher-name" id="teacher-name-1">Марков Станислав Юрьевич</p>
-                    </td>
-                    <td>0</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Марков Станислав" data-bs-content="Английский язык--5Б--5часов <br> Английский язык--9А--5часов" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">10</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Марков Станислав" data-bs-content="Английский язык--11В--5часов <br> Информатика--11В--5часов" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">10</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <th>20</th>
-                </tr>
-                <tr>
-                    <td class="teacher-name-cell" data-teacher-id="2">
-                        <a href="editTeacherHours.html" class="btn btn-outline-secondary hide" id="TeacherId2"><i class="fa-solid fa-pencil"></i>Изменить</a>
-                        <p class="teacher-name" id="teacher-name-2">Маркова Нина Станиславовна</p>
-                    </td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="Русский язык--1Б--5часов <br> Математика--1Б--5часов" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">10</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="Математика--1Б--5часов" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">5</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="1Б <br> 2Б" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="5Б <br> 9А" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="11В" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">1</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="1Б <br> 2Б" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="5Б <br> 9А" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="11В" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">1</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="1Б <br> 2Б" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="5Б <br> 9А" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="11В" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">1</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="1Б <br> 2Б" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="5Б <br> 9А" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="11В" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">1</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="1Б <br> 2Б" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="5Б <br> 9А" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="11В" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">1</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="1Б <br> 2Б" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="5Б <br> 9А" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="11В" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">1</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="1Б <br> 2Б" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="5Б <br> 9А" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="11В" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">1</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="1Б <br> 2Б" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="5Б <br> 9А" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="11В" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">1</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="1Б <br> 2Б" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="5Б <br> 9А" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="11В" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">1</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="1Б <br> 2Б" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="5Б <br> 9А" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">2</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Нина" data-bs-content="11В" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">1</td>
-                    <th>65</th>
-                </tr>
-                <tr>
-                    <td class="teacher-name-cell" data-teacher-id="3">
-                        <a href="editTeacherHours.html" class="btn btn-outline-secondary hide" id="TeacherId3"><i class="fa-solid fa-pencil"></i>Изменить</a>
-                        <p class="teacher-name" id="teacher-name-3">Маркова Александра Станиславовна</p>
-                    </td>
-                    <td>0</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Александра" data-bs-content="Русский язык--5Б--5часов <br> Английский язык--5Б--5часов <br> Русский язык--9А--5часов <br> Английский язык--9А--5часов" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">20</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Маркова Александра" data-bs-content="Русский язык--11В--5часов <br> Английский язык--11В--5часов" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">10</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <th>30</th>
-                </tr>
-                <tr>
-                    <td style="height: 30px">Вакансия</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Вакансия" data-bs-content="Физкультура--1Б--5часов <br>Русский язык--2Б--5часов <br>Математика--2Б--5часов <br> Физкультура--2Б--5часов" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">20</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Вакансия" data-bs-content="Математика--5Б--5часов <br> Физкультура--5Б--5часов <br>Математика--9А--5часов <br> Физкультура--9А--5часов" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">20</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Вакансия" data-bs-content="Математика--11В--5часов <br> Физкультура--11В--5часов" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">10</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Вакансия" data-bs-content="Математика--2Б--5часов" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">5</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Вакансия" data-bs-content="Математика--5Б--5часов <br> Математика--9А--5часов" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">10</td>
-                    <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="Вакансия" data-bs-content="Математика--11В--5часов" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">5</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <th>70</th>
-                </tr>
-                <tr>
-                    <th>Всего</th>
-                    <th>30</th>
-                    <th>50</th>
-                    <th>30</th>
-                    <th>10</th>
-                    <th>10</th>
-                    <th>5</th>
-                    <th>2</th>
-                    <th>2</th>
-                    <th>1</th>
-                    <th>2</th>
-                    <th>2</th>
-                    <th>1</th>
-                    <th>2</th>
-                    <th>2</th>
-                    <th>1</th>
-                    <th>2</th>
-                    <th>2</th>
-                    <th>1</th>
-                    <th>2</th>
-                    <th>2</th>
-                    <th>1</th>
-                    <th>2</th>
-                    <th>2</th>
-                    <th>1</th>
-                    <th>2</th>
-                    <th>2</th>
-                    <th>1</th>
-                    <th>2</th>
-                    <th>2</th>
-                    <th>1</th>
-                    <th>2</th>
-                    <th>2</th>
-                    <th>1</th>
-                    <th>2</th>
-                    <th>2</th>
-                    <th>1</th>
-                    <th>185</th>
-                </tr>
-            </table>
-            <div class="add-button">
-                <a href="#" id="print-new-tariffication" class="btn btn-outline-success"><i class="fa-solid fa-table"></i> Печать</a>
-                <a asp-action="Index" id="back-new-tariffication" class="btn btn-outline-danger"><i class="fa-solid fa-arrow-left"></i> Назад</a>
-            </div>
+<header>
+    <h1>@tariffTitle</h1>
+</header>
+<div class="card custom-card">
+    <div class="custom-container">
+        <div class="row info-buttons-block">
+            <a asp-action="TeachersInfo" asp-route-tariffId="@Model.Id" class="btn btn-outline-warning">Учителя</a>
+            <a asp-action="TeachingPlan" asp-route-tariffId="@Model.Id" type="button" class="btn btn-outline-info">Учебный план</a>
+            <a asp-action="StudyClasses" asp-route-tariffId="@Model.Id" type="button" class="btn btn-outline-success">Классы</a>
+        </div>
+        <table id="tariffication-table">
+            <tr>
+                <th scope="col" rowspan="2" style="width:100px">ФИО</th>
+                <th scope="col" colspan="3">Обязательная часть</th>
+                <th scope="col" colspan="3">Формируемая часть</th>
+                <th scope="col" colspan="3">Extra Subject</th>
+                <th scope="col" rowspan="2">Итого</th>
+            </tr>
+            <tr>
+                <th scope="col">1-4</th>
+                <th scope="col">5-9</th>
+                <th scope="col">10-11</th>
+                <th scope="col">1-4</th>
+                <th scope="col">5-9</th>
+                <th scope="col">10-11</th>
+                @*foreach extra subject*@
+                <th scope="col">1-4</th>
+                <th scope="col">5-9</th>
+                <th scope="col">10-11</th>
+            </tr>
+            @{
+                int requiredBeginersTotal = 0;
+                int requiredMiddleTotal = 0;
+                int requiredHighTotal = 0;
+
+                int formedBeginersTotal = 0;
+                int formedMiddleTotal = 0;
+                int formedHighTotal = 0;
+
+                int extraBeginersTotal = 0;
+                int extraMiddleTotal = 0;
+                int extraHighTotal = 0;
+                foreach (var teacher in Model.TeachersSummaryInfo)
+                {
+                    <tr>
+                        <td class="teacher-name-cell" data-teacher-id="@teacher.TeacherId">
+                            <a href="editTeacherHours.html" class="btn btn-outline-secondary hide" id="TeacherId-@teacher.TeacherId"><i class="fa-solid fa-pencil"></i>Изменить</a>
+                            <p class="teacher-name" id="teacher-name-@teacher.TeacherId">@teacher.TeacherName</p>
+                        </td>
+                        @*required part*@
+                        @{
+                            if (teacher.RequiredTeacherInfo.TeacherBeginnersInfo.HoursSummary > 0)
+                            {
+                                requiredBeginersTotal += teacher.RequiredTeacherInfo.TeacherBeginnersInfo.HoursSummary;
+                                var content = String.Join(" <br> ", teacher.RequiredTeacherInfo.TeacherBeginnersInfo.TeacherInfo.Select(ti => $"{ti.SubjectName}---{ti.StudyClassName}---{ti.SubjectHours} часов"));
+                                <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="@teacher.TeacherName" data-bs-content="@content" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">@teacher.RequiredTeacherInfo.TeacherBeginnersInfo.HoursSummary</td>
+                            }
+                            else
+                            {
+                                <td>0</td>
+                            }
+
+                            if (teacher.RequiredTeacherInfo.TeacherMiddleInfo.HoursSummary > 0)
+                            {
+                                requiredMiddleTotal += teacher.RequiredTeacherInfo.TeacherMiddleInfo.HoursSummary;
+                                var content = String.Join(" <br> ", teacher.RequiredTeacherInfo.TeacherMiddleInfo.TeacherInfo.Select(ti => $"{ti.SubjectName}---{ti.StudyClassName}---{ti.SubjectHours} часов"));
+                                <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="@teacher.TeacherName" data-bs-content="@content" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">@teacher.RequiredTeacherInfo.TeacherMiddleInfo.HoursSummary</td>
+                            }
+                            else
+                            {
+                                <td>0</td>
+                            }
+
+                            if (teacher.RequiredTeacherInfo.TeacherHighInfo.HoursSummary > 0)
+                            {
+                                requiredHighTotal += teacher.RequiredTeacherInfo.TeacherHighInfo.HoursSummary;
+                                var content = String.Join(" <br> ", teacher.RequiredTeacherInfo.TeacherHighInfo.TeacherInfo.Select(ti => $"{ti.SubjectName}---{ti.StudyClassName}---{ti.SubjectHours} часов"));
+                                <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="@teacher.TeacherName" data-bs-content="@content" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">@teacher.RequiredTeacherInfo.TeacherHighInfo.HoursSummary</td>
+                            }
+                            else
+                            {
+                                <td>0</td>
+                            }
+                        }
+                        @*formed part*@
+                        @{
+                            if (teacher.FormedTacherInfo.TeacherBeginnersInfo.HoursSummary > 0)
+                            {
+                                formedBeginersTotal += teacher.FormedTacherInfo.TeacherBeginnersInfo.HoursSummary;
+                                var content = String.Join(" <br> ", teacher.FormedTacherInfo.TeacherBeginnersInfo.TeacherInfo.Select(ti => $"{ti.SubjectName}---{ti.StudyClassName}---{ti.SubjectHours} часов"));
+                                <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="@teacher.TeacherName" data-bs-content="@content" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">@teacher.FormedTacherInfo.TeacherBeginnersInfo.HoursSummary</td>
+                            }
+                            else
+                            {
+                                <td>0</td>
+                            }
+
+                            if (teacher.FormedTacherInfo.TeacherMiddleInfo.HoursSummary > 0)
+                            {
+                                formedMiddleTotal += teacher.FormedTacherInfo.TeacherHighInfo.HoursSummary;
+                                var content = String.Join(" <br> ", teacher.FormedTacherInfo.TeacherMiddleInfo.TeacherInfo.Select(ti => $"{ti.SubjectName}---{ti.StudyClassName}---{ti.SubjectHours} часов"));
+                                <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="@teacher.TeacherName" data-bs-content="@content" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">@teacher.FormedTacherInfo.TeacherMiddleInfo.HoursSummary</td>
+                            }
+                            else
+                            {
+                                <td>0</td>
+                            }
+
+                            if (teacher.FormedTacherInfo.TeacherHighInfo.HoursSummary > 0)
+                            {
+                                formedHighTotal += teacher.FormedTacherInfo.TeacherHighInfo.HoursSummary;
+                                var content = String.Join(" <br> ", teacher.FormedTacherInfo.TeacherHighInfo.TeacherInfo.Select(ti => $"{ti.SubjectName}---{ti.StudyClassName}---{ti.SubjectHours} часов"));
+                                <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="@teacher.TeacherName" data-bs-content="@content" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">@teacher.FormedTacherInfo.TeacherHighInfo.HoursSummary</td>
+                            }
+                            else
+                            {
+                                <td>0</td>
+                            }
+                        }
+                        @*foreach extra subject*@
+                        @{
+                            if (teacher.ExtraTeacherInfo.TeacherBeginnersInfo.HoursSummary > 0)
+                            {
+                                extraBeginersTotal += teacher.ExtraTeacherInfo.TeacherBeginnersInfo.HoursSummary;
+                                var content = String.Join(" <br> ", teacher.ExtraTeacherInfo.TeacherBeginnersInfo.TeacherInfo.Select(ti => $"{ti.SubjectName}---{ti.StudyClassName}---{ti.SubjectHours} часов"));
+                                <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="@teacher.TeacherName" data-bs-content="@content" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">@teacher.ExtraTeacherInfo.TeacherBeginnersInfo.HoursSummary</td>
+                            }
+                            else
+                            {
+                                <td>0</td>
+                            }
+
+                            if (teacher.ExtraTeacherInfo.TeacherMiddleInfo.HoursSummary > 0)
+                            {
+                                extraMiddleTotal += teacher.ExtraTeacherInfo.TeacherMiddleInfo.HoursSummary;
+                                var content = String.Join(" <br> ", teacher.ExtraTeacherInfo.TeacherMiddleInfo.TeacherInfo.Select(ti => $"{ti.SubjectName}---{ti.StudyClassName}---{ti.SubjectHours} часов"));
+                                <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="@teacher.TeacherName" data-bs-content="@content" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">@teacher.ExtraTeacherInfo.TeacherMiddleInfo.HoursSummary</td>
+                            }
+                            else
+                            {
+                                <td>0</td>
+                            }
+
+                            if (teacher.ExtraTeacherInfo.TeacherHighInfo.HoursSummary > 0)
+                            {
+                                extraHighTotal += teacher.ExtraTeacherInfo.TeacherHighInfo.HoursSummary;
+                                var content = String.Join(" <br> ", teacher.ExtraTeacherInfo.TeacherHighInfo.TeacherInfo.Select(ti => $"{ti.SubjectName}---{ti.StudyClassName}---{ti.SubjectHours} часов"));
+                                <td class="teacher-hour-cell" data-html="true" data-bs-toggle="popover" title="@teacher.TeacherName" data-bs-content="@content" onmouseover="hourCellHover($(this))" onmouseout="hourCellOut($(this))">@teacher.ExtraTeacherInfo.TeacherHighInfo.HoursSummary</td>
+                            }
+                            else
+                            {
+                                <td>0</td>
+                            }
+                        }
+                        @*total*@
+                        @{
+                            var teacherRequiredTotal = teacher.RequiredTeacherInfo.TeacherBeginnersInfo.HoursSummary + teacher.RequiredTeacherInfo.TeacherMiddleInfo.HoursSummary+ teacher.RequiredTeacherInfo.TeacherHighInfo.HoursSummary;
+                            var teacherFormedTotal = teacher.FormedTacherInfo.TeacherBeginnersInfo.HoursSummary + teacher.FormedTacherInfo.TeacherMiddleInfo.HoursSummary + teacher.FormedTacherInfo.TeacherHighInfo.HoursSummary;
+                            var teacherExtraTotal = teacher.ExtraTeacherInfo.TeacherBeginnersInfo.HoursSummary + teacher.ExtraTeacherInfo.TeacherMiddleInfo.HoursSummary + teacher.ExtraTeacherInfo.TeacherHighInfo.HoursSummary;
+                        }
+                        <th>@(teacherRequiredTotal+teacherFormedTotal+teacherExtraTotal)</th>
+                    </tr>
+                }
+            }
+            <tr>
+                <th>Всего</th>
+                <th>@requiredBeginersTotal</th>
+                <th>@requiredMiddleTotal</th>
+                <th>@requiredHighTotal</th>
+                <th>@formedBeginersTotal</th>
+                <th>@formedMiddleTotal</th>
+                <th>@formedHighTotal</th>
+                <th>@extraBeginersTotal</th>
+                <th>@extraMiddleTotal</th>
+                <th>@extraHighTotal</th>
+                @{
+                    var grandTotal = requiredBeginersTotal+requiredMiddleTotal+requiredHighTotal+formedBeginersTotal+formedMiddleTotal+formedHighTotal+extraBeginersTotal+extraMiddleTotal+extraHighTotal;
+                }
+                <th>@grandTotal</th>
+            </tr>
+        </table>
+        <div class="add-button">
+            <a href="#" id="print-new-tariffication" class="btn btn-outline-success"><i class="fa-solid fa-table"></i> Печать</a>
+            <a asp-action="Index" id="back-new-tariffication" class="btn btn-outline-danger"><i class="fa-solid fa-arrow-left"></i> Назад</a>
         </div>
     </div>
+</div>

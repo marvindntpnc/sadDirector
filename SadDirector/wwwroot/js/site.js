@@ -1,7 +1,9 @@
 ﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+console.log('fuck')
 var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
 var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
     const options={
@@ -657,7 +659,7 @@ function saveClassSubjectHours(subjectId, classId, isRequired,isExtra=false){
     }
     programs.push(subjectProgramMain);
     
-    if ($('input-'+required+'-subject-hours-'+subjectId+'-'+classId+'-p2')!=null){
+    if ($('#input-'+required+'-subject-hours-'+subjectId+'-'+classId+'-p2')!=null){
         let subjectProgram={
             SubjectId:subjectId,
             TeacherId:$('#input-'+required+'-subject-class-'+subjectId+'-'+classId+'-p2 option:selected').val(),
@@ -682,8 +684,20 @@ function saveClassSubjectHours(subjectId, classId, isRequired,isExtra=false){
         data: postData,
         success: function (data, textStatus, jqXHR) {
             if (data.success) {
-                cancelClassSubjectHours(subjectId, classId, isRequired)
-                location.reload()
+                if (isExtra) {
+                    $('#extra-subject-class-' + subjectId + '-' + classId).text($('#input-extra-subject-class-' + subjectId + '-' + classId +' option:selected').text())
+                    $('#extra-subject-hours-' + subjectId + '-' + classId).text(currentHoursMain)
+                } else {
+                    $('#' + required + '-current-student-count-' + classId).text(studentCount)
+                    $('#' + required + '-subject-class-' + subjectId + '-' + classId + '-p1').text($('#input-' + required + '-subject-class-' + subjectId + '-' + classId + '-p1 option:selected').text())
+                    $('#' + required + '-subject-hours-' + subjectId + '-' + classId + '-p1').text(currentHoursMain)
+                    if ($('#' + required + '-subject-hours-' + subjectId + '-' + classId + '-p2') != null) {
+                        $('#' + required + '-subject-class-' + subjectId + '-' + classId + '-p2').text($('#input-' + required + '-subject-class-' + subjectId + '-' + classId + '-p2 option:selected').text())
+                        $('#' + required + '-subject-hours-' + subjectId + '-' + classId + '-p2').text(currentHours)
+                    }
+                }
+                cancelClassSubjectHours(subjectId, classId, isRequired, isExtra)
+                //location.reload()
             }
         },
         complete: function (jqXHR, textStatus) {
@@ -691,10 +705,22 @@ function saveClassSubjectHours(subjectId, classId, isRequired,isExtra=false){
         }
     });
 }
-function cancelClassSubjectHours(subjectId, classId, isRequired){
+function cancelClassSubjectHours(subjectId, classId, isRequired,isExtra=false){
     let required='formed'
     if(isRequired)
         required='required'
+
+    if (isExtra) {
+        $('#extra-subject-class-' + subjectId + '-' + classId).removeClass('hide')
+        $('#input-extra-subject-class-' + subjectId + '-' + classId).addClass('hide')
+
+        $('#extra-subject-hours-' + subjectId + '-' + classId).removeClass('hide')
+        $('#input-extra-subject-hours-' + subjectId + '-' + classId).addClass('hide')
+
+        $('#edit-extra-subject-' + subjectId + '-' + classId).removeClass('hide')
+        $('#save-extra-subject-' + subjectId + '-' + classId).addClass('hide')
+        $('#cancel-extra-subject-' + subjectId + '-' + classId).addClass('hide')
+    }
 
     $('#'+required+'-current-student-count-'+classId).removeClass('hide')
     $('#'+required+'-input-student-count-'+classId).addClass('hide')
@@ -881,12 +907,12 @@ $(document).ready(function (){
     $('.teacher-name-cell').each(function (){
         $(this).mouseover(function (){
             const teacherId=$(this).attr('data-teacher-id')
-            $('#TeacherId'+teacherId).removeClass('hide')
+            $('#TeacherId-'+teacherId).removeClass('hide')
             $('#teacher-name-'+teacherId).addClass('hide')
         })
         $(this).mouseout(function (){
             const teacherId=$(this).attr('data-teacher-id')
-            $('#TeacherId'+teacherId).addClass('hide')
+            $('#TeacherId-'+teacherId).addClass('hide')
             $('#teacher-name-'+teacherId).removeClass('hide')
         })
     })

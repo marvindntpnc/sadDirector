@@ -40,8 +40,11 @@ public class SadDirectorService
         return tariff;
     }
 
-    public async Task<string?> GetSubjectNameByIdAsync(int subjectId)
+    public async Task<string?> GetSubjectNameByIdAsync(int subjectId,bool isExtra=false)
     {
+        if (isExtra)
+            return (await _dbContext.ExtraSubjects.FirstOrDefaultAsync(ex => ex.Id == subjectId))?.ShortName;
+
         return (await _dbContext.StudySubjects.FirstOrDefaultAsync(cs => cs.Id == subjectId))?.Name;
     }
 
@@ -87,6 +90,13 @@ public class SadDirectorService
         }
 
         return list;
+    }
+
+    public async Task<List<SubjectInfo>> GetTeacherInfosAsync(int teacherId,bool isRequired, bool isExtra) {
+
+        return await _dbContext.SubjectInfos.Where(si => si.TeacherId == teacherId 
+        && si.IsExtra== isExtra
+        && si.IsRequired== isRequired).ToListAsync();
     }
 
     #region Teachers
@@ -190,9 +200,12 @@ public class SadDirectorService
         return await _dbContext.StudySubjects.ToListAsync();
     }
 
-    public async Task<List<StudyClass>> GetStudyClassListAsync()
+    public async Task<List<StudyClass>> GetStudyClassListAsync(StudyClassLevel? level=null)
     {
-        return await _dbContext.StudyClasses.ToListAsync();
+        if (level != null)
+            return await _dbContext.StudyClasses.Where(sc=>sc.StudyClassLevel==level).ToListAsync();
+        else
+            return await _dbContext.StudyClasses.ToListAsync();
     }
 
     public async Task<List<ExtraSubject?>> GetExtraSubjectListAsync()
@@ -360,7 +373,7 @@ public class SadDirectorService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<List<TeachingProgram>> GetStudyClassTeachingProgramAsync(int studyClassId)
+    public async Task<List<TeachingProgram>> GetStudyClassTeachingProgramAsync(int studyClassId,bool? isRequired=null)
     {
         var programsList=await _dbContext.TeachingPrograms.Where(tp => tp.StudyClassId == studyClassId).ToListAsync();
         var studyClass = await GetStudyClassByIdAsync(studyClassId);
@@ -406,6 +419,8 @@ public class SadDirectorService
             }
             await _dbContext.SaveChangesAsync();
         }
+        if (isRequired != null)
+            return list.Where(p => p.IsRequired == isRequired).ToList();
 
         return list;
     }

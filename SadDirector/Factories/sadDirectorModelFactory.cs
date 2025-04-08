@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SadDirector.Domain;
+using SadDirector.Domain.StudyClasses;
+using SadDirector.Domain.TeacherInfo;
 using SadDirector.Domain.TeacherInfo.enums;
 using SadDirector.Domain.TeachingPlan;
 using SadDirector.Domain.TeachingPlan.enums;
@@ -17,7 +19,7 @@ public class SadDirectorModelFactory
     {
         _sadDirectorService = sadDirectorService;
     }
-    
+
     public async Task<TariffListModel> PrepareTariffListModelAsync()
     {
         var tariffList = await _sadDirectorService.GetTariffListAsync();
@@ -29,7 +31,7 @@ public class SadDirectorModelFactory
         {
             model.TariffList.Add(new TariffModel
             {
-                Id =tariff.Id,
+                Id = tariff.Id,
                 Name = tariff.Name,
                 Period = tariff.Period
             });
@@ -39,16 +41,143 @@ public class SadDirectorModelFactory
     public async Task<TariffModel> PrepareTariffModelAsync(int tariffId)
     {
         var tariff = await _sadDirectorService.GetTariffByIdAsync(tariffId);
-        
+
         if (tariff == null)
             return new TariffModel();
-        
+
         var model = new TariffModel
         {
             Id = tariff!.Id,
-            Name=tariff.Name,
-            Period = tariff.Period
+            Name = tariff.Name,
+            Period = tariff.Period,
+            TeachersSummaryInfo = new List<TeacherSummaryModel>()
         };
+
+        var teachers = await _sadDirectorService.GetTeacherListAsync();
+
+        foreach (var teacher in teachers)
+        {
+            model.TeachersSummaryInfo.Add(new TeacherSummaryModel
+            {
+                TeacherId = teacher.Id,
+                TeacherName = await _sadDirectorService.GetTeacherFullNameByIdAsync(teacher.Id) ?? "",
+                RequiredTeacherInfo = await PrepareTeacherInfoAsync(teacher.Id, true),
+                FormedTacherInfo = await PrepareTeacherInfoAsync(teacher.Id),
+                ExtraTeacherInfo = await PrepareTeacherInfoAsync(teacher.Id, isExtra: true)
+            });
+        }
+        model.TeachersSummaryInfo.Add(new TeacherSummaryModel
+        {
+            TeacherId = 0,
+            TeacherName = "Вакансия",
+            RequiredTeacherInfo = await PrepareTeacherInfoAsync(0, true),
+            FormedTacherInfo = await PrepareTeacherInfoAsync(0),
+            ExtraTeacherInfo = await PrepareTeacherInfoAsync(0, isExtra: true)
+        });
+
+        return model;
+    }
+
+    private async Task<TeacherInfo> PrepareTeacherInfoAsync(int teacherId, bool isRequired = false, bool isExtra = false)
+    {
+        var model = new TeacherInfo
+        {
+            TeacherBeginnersInfo = await PrepareTeacherLevelModelAsync(teacherId, StudyClassLevel.Beginner, isRequired, isExtra),
+            TeacherMiddleInfo = await PrepareTeacherLevelModelAsync(teacherId, StudyClassLevel.Middle, isRequired, isExtra),
+            TeacherHighInfo = await PrepareTeacherLevelModelAsync(teacherId, StudyClassLevel.High, isRequired, isExtra)
+        };
+        return model;
+    }
+    private async Task<TeacherLevelModel> PrepareTeacherLevelModelAsync(int teacherId, StudyClassLevel studyLevel, bool isRequired, bool isExtra)
+    {
+        var model = new TeacherLevelModel
+        {
+            StudyLevel = studyLevel,
+            TeacherInfo = new List<TeacherInfoModel>()
+        };
+        if (teacherId>0)
+        {
+            var teacherInfos = await _sadDirectorService.GetTeacherInfosAsync(teacherId, isRequired, isExtra);
+            var list = new List<SubjectInfo>();
+
+            foreach (var item in teacherInfos)
+            {
+                if (!list.Any(i => i.StudyClassId == item.StudyClassId && i.SubjectId == item.SubjectId))
+                {
+                    if (teacherInfos.Any(ti => ti.StudyClassId == item.StudyClassId && ti.SubjectId == item.SubjectId))
+                    {
+                        var duplicates = teacherInfos.Where(ti => ti.StudyClassId == item.StudyClassId && ti.SubjectId == item.SubjectId);
+                        list.Add(new SubjectInfo
+                        {
+                            SubjectId = item.SubjectId,
+                            StudyClassId = item.StudyClassId,
+                            CurrentHours = duplicates.Sum(d => d.CurrentHours)
+                        });
+                    }
+                    else
+                    {
+                        list.Add(item);
+                    }
+                }
+            }
+            foreach (var info in list)
+            {
+                var studyClass = await _sadDirectorService.GetStudyClassByIdAsync(info.StudyClassId);
+                if (studyClass?.StudyClassLevel == studyLevel)
+                {
+                    model.TeacherInfo.Add(new TeacherInfoModel
+                    {
+                        StudyClassId = info.StudyClassId,
+                        SubjectId = info.SubjectId,
+                        SubjectHours = info.CurrentHours,
+                        StudyClassName = studyClass.Name,
+                        SubjectName = await _sadDirectorService.GetSubjectNameByIdAsync(info.SubjectId, isExtra) ?? "Ошибка"
+                    });
+                }
+            }
+        }
+        else
+        {
+            var studyClassList = await _sadDirectorService.GetStudyClassListAsync(studyLevel);
+            foreach (var studyClass in studyClassList)
+            {
+                var list = new List<SubjectInfo>();
+                var studyClassSubjectList = await _sadDirectorService.GetStudyClassTeachingProgramAsync(studyClass.Id, isRequired);
+                foreach (var program in studyClassSubjectList)
+                {
+                    var subject = await _sadDirectorService.GetSubjectByIdAsync(program.SubjectId);
+                    var subjectInfoList = await _sadDirectorService.GetStudyClassSubjectInfo(studyClass.Id, program.SubjectId, isRequired);
+                    var planHours = studyClass.StudentCount>=25 && subject.IsSeparated ? program.Hours * 2 : program.Hours;
+                    if (planHours > subjectInfoList.Sum(si => si.CurrentHours))
+                    {
+                        list.Add(new SubjectInfo
+                        {
+                            SubjectId = program.SubjectId,
+                            StudyClassId = studyClass.Id,
+                            CurrentHours = planHours - subjectInfoList.Sum(si => si.CurrentHours)
+                        });
+                    }
+
+                }
+
+                foreach (var info in list)
+                {
+                    if (studyClass?.StudyClassLevel == studyLevel)
+                    {
+                        model.TeacherInfo.Add(new TeacherInfoModel
+                        {
+                            StudyClassId = info.StudyClassId,
+                            SubjectId = info.SubjectId,
+                            SubjectHours = info.CurrentHours,
+                            StudyClassName = studyClass.Name,
+                            SubjectName = await _sadDirectorService.GetSubjectNameByIdAsync(info.SubjectId, isExtra) ?? "Ошибка"
+                        });
+                    }
+                }
+
+            }
+        }
+        
         return model;
     }
 
@@ -62,7 +191,7 @@ public class SadDirectorModelFactory
             TariffId = tariffId,
             TeacherList = new List<TeacherModel>()
         };
-        
+
         model.TeachersClassroom.Add(new SelectListItem
         {
             Value = "0",
@@ -94,7 +223,7 @@ public class SadDirectorModelFactory
         foreach (TeacherDegree degree in Enum.GetValues(typeof(TeacherDegree)))
         {
             string degreeName = string.Empty;
-            
+
             switch (degree)
             {
                 case TeacherDegree.Director:
@@ -114,7 +243,7 @@ public class SadDirectorModelFactory
         foreach (TeacherCategory category in Enum.GetValues(typeof(TeacherCategory)))
         {
             string categoryName = string.Empty;
-            
+
             switch (category)
             {
                 case TeacherCategory.First:
@@ -137,7 +266,7 @@ public class SadDirectorModelFactory
         foreach (TeacherEducation education in Enum.GetValues(typeof(TeacherEducation)))
         {
             string educationName = string.Empty;
-            
+
             switch (education)
             {
                 case TeacherEducation.Bachelor:
@@ -156,8 +285,8 @@ public class SadDirectorModelFactory
                 Text = educationName
             });
         }
-        
-        var subjectList=await _sadDirectorService.GetSubjectListAsync();
+
+        var subjectList = await _sadDirectorService.GetSubjectListAsync();
         var studyClassesList = await _sadDirectorService.GetStudyClassListAsync();
 
         foreach (var subject in subjectList)
@@ -189,30 +318,30 @@ public class SadDirectorModelFactory
                 Name = teacher.Name,
                 Surname = teacher.Surname,
                 SecondName = teacher.SecondName,
-                TeacherEducation=teacher.Education,
-                TeacherCategory=teacher.TeacherCategory,
-                TariffCategory=teacher.TeacherTariffCategory,
-                ExperienceFrom=teacher.ExperienceFrom,
-                TeacherDegree=teacher.TeacherDegree,
-                StudyClassId=teacher.StudyClassId,
-                ClassroomId=teacher.ClassroomId,
-                IsDirector=teacher.IsDirector,
-                IsHeadTeacher=teacher.IsHeadTeacher,
-                IsMentor=teacher.IsMentor,
-                AfterClassesTeacher=teacher.AfterClassesTeacher,
-                IsPsychologist=teacher.IsPsychologist,
-                IsSocial=teacher.IsSocial,
-                IsFacilitator=teacher.IsFacilitator,
-                IsLibraryManager=teacher.IsLibraryManager,
-                IsLogopedist=teacher.IsLogopedist,
-                IsMain=teacher.IsMain,
-                Museum=teacher.Museum,
-                Theater=teacher.Theater,
-                Chorus=teacher.Chorus,
-                Scouts=teacher.Scouts,
-                SportClub=teacher.SportClub,
+                TeacherEducation = teacher.Education,
+                TeacherCategory = teacher.TeacherCategory,
+                TariffCategory = teacher.TeacherTariffCategory,
+                ExperienceFrom = teacher.ExperienceFrom,
+                TeacherDegree = teacher.TeacherDegree,
+                StudyClassId = teacher.StudyClassId,
+                ClassroomId = teacher.ClassroomId,
+                IsDirector = teacher.IsDirector,
+                IsHeadTeacher = teacher.IsHeadTeacher,
+                IsMentor = teacher.IsMentor,
+                AfterClassesTeacher = teacher.AfterClassesTeacher,
+                IsPsychologist = teacher.IsPsychologist,
+                IsSocial = teacher.IsSocial,
+                IsFacilitator = teacher.IsFacilitator,
+                IsLibraryManager = teacher.IsLibraryManager,
+                IsLogopedist = teacher.IsLogopedist,
+                IsMain = teacher.IsMain,
+                Museum = teacher.Museum,
+                Theater = teacher.Theater,
+                Chorus = teacher.Chorus,
+                Scouts = teacher.Scouts,
+                SportClub = teacher.SportClub,
                 SubjectIds = teacherSubjects.Select(x => x.SubjectId).ToList(),
-                TeacherSubjectList = string.Join(", " , teacherSubjects.Select(x => _sadDirectorService.GetSubjectNameByIdAsync(x.SubjectId).Result))
+                TeacherSubjectList = string.Join(", ", teacherSubjects.Select(x => _sadDirectorService.GetSubjectNameByIdAsync(x.SubjectId).Result))
             });
         }
         return model;
@@ -228,10 +357,10 @@ public class SadDirectorModelFactory
         {
             TariffId = tariffId
         };
-        
-        model.BeginnersStudyLevel=await PrepareStudyLevelModel(StudyClassLevel.Beginner);
-        model.MiddleStudyLevel=await PrepareStudyLevelModel(StudyClassLevel.Middle);
-        model.HighStudyLevel=await PrepareStudyLevelModel(StudyClassLevel.High);
+
+        model.BeginnersStudyLevel = await PrepareStudyLevelModel(StudyClassLevel.Beginner);
+        model.MiddleStudyLevel = await PrepareStudyLevelModel(StudyClassLevel.Middle);
+        model.HighStudyLevel = await PrepareStudyLevelModel(StudyClassLevel.High);
         model.ExtraPrograms = await PrepareExtraProgramsModel();
         return model;
     }
@@ -253,7 +382,7 @@ public class SadDirectorModelFactory
                         Value = subject.Id.ToString(),
                         Selected = subject.AssignAsRequiredToBeginners
                     });
-                    
+
                     model.FormedSubjects.Add(new SelectListItem
                     {
                         Text = subject.Name,
@@ -268,7 +397,7 @@ public class SadDirectorModelFactory
                         Value = subject.Id.ToString(),
                         Selected = subject.AssignAsRequiredToMiddle
                     });
-                    
+
                     model.FormedSubjects.Add(new SelectListItem
                     {
                         Text = subject.Name,
@@ -283,7 +412,7 @@ public class SadDirectorModelFactory
                         Value = subject.Id.ToString(),
                         Selected = subject.AssignAsRequiredToHigh
                     });
-                    
+
                     model.FormedSubjects.Add(new SelectListItem
                     {
                         Text = subject.Name,
@@ -294,28 +423,28 @@ public class SadDirectorModelFactory
             }
         }
         var studyClassList = await _sadDirectorService.GetStudyClassListAsync();
-        var classes=studyClassList.Where(sc=>sc.StudyClassLevel==studyClassLevel).ToList();
+        var classes = studyClassList.Where(sc => sc.StudyClassLevel == studyClassLevel).ToList();
         var requiredSubjects = new List<StudySubject>();
         var formedSubjects = new List<StudySubject>();
         switch (studyClassLevel)
         {
             case StudyClassLevel.Beginner:
-                requiredSubjects=subjectList.Where(ss=>ss.AssignAsRequiredToBeginners).ToList();
-                formedSubjects=subjectList.Where(ss=>ss.AssignAsFormedToBeginners).ToList();
+                requiredSubjects = subjectList.Where(ss => ss.AssignAsRequiredToBeginners).ToList();
+                formedSubjects = subjectList.Where(ss => ss.AssignAsFormedToBeginners).ToList();
                 break;
             case StudyClassLevel.Middle:
-                requiredSubjects=subjectList.Where(ss=>ss.AssignAsRequiredToMiddle).ToList();
-                formedSubjects=subjectList.Where(ss=>ss.AssignAsFormedToMiddle).ToList();
+                requiredSubjects = subjectList.Where(ss => ss.AssignAsRequiredToMiddle).ToList();
+                formedSubjects = subjectList.Where(ss => ss.AssignAsFormedToMiddle).ToList();
                 break;
             case StudyClassLevel.High:
-                requiredSubjects=subjectList.Where(ss=>ss.AssignAsRequiredToHigh).ToList();
-                formedSubjects=subjectList.Where(ss=>ss.AssignAsFormedToHigh).ToList();
+                requiredSubjects = subjectList.Where(ss => ss.AssignAsRequiredToHigh).ToList();
+                formedSubjects = subjectList.Where(ss => ss.AssignAsFormedToHigh).ToList();
                 break;
         }
-        
+
         var requiredSubjectProgram = new List<SubjectProgramModel>();
         var formedSubjectProgram = new List<SubjectProgramModel>();
-        
+
         foreach (var subject in requiredSubjects)
         {
             model.RequiredSubjectList.Add(new SubjectModel
@@ -463,7 +592,7 @@ public class SadDirectorModelFactory
         {
             TariffId = tariffId
         };
-        
+
         var studyClassList = await _sadDirectorService.GetStudyClassListAsync();
         foreach (var studyClass in studyClassList)
         {
@@ -473,12 +602,12 @@ public class SadDirectorModelFactory
                 StudyClassName = studyClass.Name,
                 StudentCount = studyClass.StudentCount
             };
-            var studyClassSubjectList=await _sadDirectorService.GetStudyClassTeachingProgramAsync(studyClass.Id);
+            var studyClassSubjectList = await _sadDirectorService.GetStudyClassTeachingProgramAsync(studyClass.Id);
             foreach (var program in studyClassSubjectList)
             {
                 var subjectInfoList = await _sadDirectorService.GetStudyClassSubjectInfo(studyClass.Id, program.SubjectId, program.IsRequired);
                 var subjectInfo = new SubjectInfoModel();
-                if (subjectInfoList.Count>1)
+                if (subjectInfoList.Count > 1)
                 {
                     var mainPart = subjectInfoList.FirstOrDefault(info => info.IsMainPart);
                     var secondaryPart = subjectInfoList.FirstOrDefault(info => !info.IsMainPart);
@@ -494,23 +623,23 @@ public class SadDirectorModelFactory
                     subjectInfo.TeacherId = mainPart.TeacherId;
                     subjectInfo.TeacherName =
                         await _sadDirectorService.GetTeacherFullNameByIdAsync(mainPart.TeacherId) ?? "";
-                    subjectInfo.CurrentHoursSecondary=secondaryPart.CurrentHours;
-                    subjectInfo.TeacherNameSecondary=await _sadDirectorService.GetTeacherFullNameByIdAsync(secondaryPart.TeacherId) ?? "";
+                    subjectInfo.CurrentHoursSecondary = secondaryPart.CurrentHours;
+                    subjectInfo.TeacherNameSecondary = await _sadDirectorService.GetTeacherFullNameByIdAsync(secondaryPart.TeacherId) ?? "";
 
                 }
                 else
                 {
                     var info = subjectInfoList.FirstOrDefault();
-                    
+
                     subjectInfo.SubjectId = program.SubjectId;
                     subjectInfo.CurrentHours = info.CurrentHours;
-                    subjectInfo.IsSeparated = (await _sadDirectorService.GetSubjectByIdAsync(program.SubjectId))!.IsSeparated && studyClass.StudentCount>=25;
-                    subjectInfo.SubjectName = await _sadDirectorService.GetSubjectNameByIdAsync(program.SubjectId)??"";
+                    subjectInfo.IsSeparated = (await _sadDirectorService.GetSubjectByIdAsync(program.SubjectId))!.IsSeparated && studyClass.StudentCount >= 25;
+                    subjectInfo.SubjectName = await _sadDirectorService.GetSubjectNameByIdAsync(program.SubjectId) ?? "";
                     subjectInfo.PlanHours = program.Hours;
                     subjectInfo.TeacherId = info.TeacherId;
-                    subjectInfo.TeacherName = await _sadDirectorService.GetTeacherFullNameByIdAsync(info.TeacherId)??"";
+                    subjectInfo.TeacherName = await _sadDirectorService.GetTeacherFullNameByIdAsync(info.TeacherId) ?? "";
                 }
-                
+
                 var subjectTeacherList =
                     await _sadDirectorService.GetTeacherListBySubjectIdAsync(program.SubjectId);
                 foreach (var teacher in subjectTeacherList)
@@ -532,13 +661,13 @@ public class SadDirectorModelFactory
                 {
                     studyClassInfo.StudyClassFormedSubjects.Add(subjectInfo);
                 }
-                
+
             }
-            
-            var studyClassExtraProgram=await _sadDirectorService.GetStudyClassExtraProgramAsync(studyClass.Id);
+
+            var studyClassExtraProgram = await _sadDirectorService.GetStudyClassExtraProgramAsync(studyClass.Id);
             foreach (var extra in studyClassExtraProgram)
             {
-                var subjectInfoList = await _sadDirectorService.GetStudyClassSubjectInfo(studyClass.Id, extra.ExtraSubjectId,isExtra:true);
+                var subjectInfoList = await _sadDirectorService.GetStudyClassSubjectInfo(studyClass.Id, extra.ExtraSubjectId, isExtra: true);
                 foreach (var info in subjectInfoList)
                 {
                     var subjectInfo = new SubjectInfoModel
@@ -546,10 +675,10 @@ public class SadDirectorModelFactory
                         SubjectId = extra.ExtraSubjectId,
                         CurrentHours = info.CurrentHours,
                         IsSeparated = false,
-                        SubjectName = await _sadDirectorService.GetExtraSubjectNameByIdAsync(extra.ExtraSubjectId)??"",
+                        SubjectName = await _sadDirectorService.GetExtraSubjectNameByIdAsync(extra.ExtraSubjectId) ?? "",
                         PlanHours = extra.Hours,
                         TeacherId = info.TeacherId,
-                        TeacherName = await _sadDirectorService.GetTeacherFullNameByIdAsync(info.TeacherId)??"",
+                        TeacherName = await _sadDirectorService.GetTeacherFullNameByIdAsync(info.TeacherId) ?? "",
                     };
                     var subjectTeacherList =
                         await _sadDirectorService.GetTeacherListAsync();
@@ -557,17 +686,17 @@ public class SadDirectorModelFactory
                     {
                         subjectInfo.AvailableTeachers.Add(new SelectListItem
                         {
-                            Text = await _sadDirectorService.GetTeacherFullNameByIdAsync(teacher.Id)??"",
+                            Text = await _sadDirectorService.GetTeacherFullNameByIdAsync(teacher.Id) ?? "",
                             Value = teacher.Id.ToString(),
                             Selected = info.TeacherId == teacher.Id
                         });
                     }
-                    
+
                     studyClassInfo.StudyClassExtraSubjects.Add(subjectInfo);
-                    
+
                 }
             }
-            
+
             model.StudyClasses.Add(studyClassInfo);
         }
 

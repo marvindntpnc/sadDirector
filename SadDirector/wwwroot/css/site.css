@@ -90,7 +90,7 @@ p{
 }
 
 .teacher-name-cell{
-  width: 10%;
+  width: 300px;
   height: 100px;
 }
 
@@ -194,6 +194,7 @@ p{
 
 .teacher-hour-cell{
   cursor: pointer;
+  width:100px;
 }
 .hours-exceeding{
   color:red;
