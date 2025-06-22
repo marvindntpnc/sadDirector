@@ -34,9 +34,10 @@ public class HomeController : Controller
         var tariff=await _sadDirectorService.AddNewTariffAsync();
         return RedirectToAction("CreateOrUpdateTariff",new {tariffId=tariff.Id});
     }
-    public async Task<IActionResult> CreateOrUpdateTariff(int tariffId)
+    public async Task<IActionResult> CreateOrUpdateTariff(int tariffId,bool isDownloaded=false)
     {
         var model = await _sadDirectorModelFactory.PrepareTariffModelAsync(tariffId);
+        model.IsDownloaded=isDownloaded;
         return View("~/Views/CreateOrUpdateTariff.cshtml",model);
     }
 
@@ -183,4 +184,18 @@ public class HomeController : Controller
 
     #endregion
 
+    public async Task<IActionResult> GenerateTariffExcelDocument(int tariffId)
+    {
+        try
+        {
+            var model=await _sadDirectorModelFactory.PrepareExportTariffModelAsync(tariffId);
+            await _sadDirectorService.GenerateExcelDocumentAsync(model);
+            return RedirectToAction("CreateOrUpdateTariff",new{tariffId=tariffId,isDownloaded=true});
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
 }

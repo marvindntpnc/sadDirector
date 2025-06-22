@@ -18,7 +18,7 @@
                 <th scope="col" rowspan="2" style="width:100px">ФИО</th>
                 <th scope="col" colspan="3">Обязательная часть</th>
                 <th scope="col" colspan="3">Формируемая часть</th>
-                <th scope="col" colspan="3">Extra Subject</th>
+                <th scope="col" colspan="3">Внеурочная деятельность</th>
                 <th scope="col" rowspan="2">Итого</th>
             </tr>
             <tr>
@@ -185,8 +185,15 @@
             </tr>
         </table>
         <div class="add-button">
-            <a href="#" id="print-new-tariffication" class="btn btn-outline-success"><i class="fa-solid fa-table"></i> Печать</a>
+            <a asp-action="GenerateTariffExcelDocument" asp-route-tariffId="@Model.Id" id="print-new-tariffication" class="btn btn-outline-success"><i class="fa-solid fa-table"></i> Печать</a>
             <a asp-action="Index" id="back-new-tariffication" class="btn btn-outline-danger"><i class="fa-solid fa-arrow-left"></i> Назад</a>
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function (){
+        var isDownloaded=@Json.Serialize(Model.IsDownloaded);
+        if (isDownloaded)
+            alert('Документ сохранен в папку "Загрузки"')
+    })
+</script>

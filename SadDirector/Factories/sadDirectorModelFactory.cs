@@ -50,14 +50,20 @@ public class SadDirectorModelFactory
             Id = tariff!.Id,
             Name = tariff.Name,
             Period = tariff.Period,
-            TeachersSummaryInfo = new List<TeacherSummaryModel>()
+            TeachersSummaryInfo = await PrepareTeacherSummaryModelList()
         };
 
+        return model;
+    }
+
+    private async Task<List<TeacherSummaryModel>> PrepareTeacherSummaryModelList()
+    {
+        var teacherSummaryList=new List<TeacherSummaryModel>();
         var teachers = await _sadDirectorService.GetTeacherListAsync();
 
         foreach (var teacher in teachers)
         {
-            model.TeachersSummaryInfo.Add(new TeacherSummaryModel
+            teacherSummaryList.Add(new TeacherSummaryModel
             {
                 TeacherId = teacher.Id,
                 TeacherName = await _sadDirectorService.GetTeacherFullNameByIdAsync(teacher.Id) ?? "",
@@ -66,7 +72,7 @@ public class SadDirectorModelFactory
                 ExtraTeacherInfo = await PrepareTeacherInfoAsync(teacher.Id, isExtra: true)
             });
         }
-        model.TeachersSummaryInfo.Add(new TeacherSummaryModel
+        teacherSummaryList.Add(new TeacherSummaryModel
         {
             TeacherId = 0,
             TeacherName = "Вакансия",
@@ -74,8 +80,8 @@ public class SadDirectorModelFactory
             FormedTacherInfo = await PrepareTeacherInfoAsync(0),
             ExtraTeacherInfo = await PrepareTeacherInfoAsync(0, isExtra: true)
         });
-
-        return model;
+        
+        return teacherSummaryList;
     }
 
     private async Task<TeacherInfo> PrepareTeacherInfoAsync(int teacherId, bool isRequired = false, bool isExtra = false)
@@ -142,23 +148,44 @@ public class SadDirectorModelFactory
             foreach (var studyClass in studyClassList)
             {
                 var list = new List<SubjectInfo>();
-                var studyClassSubjectList = await _sadDirectorService.GetStudyClassTeachingProgramAsync(studyClass.Id, isRequired);
-                foreach (var program in studyClassSubjectList)
+                if (isExtra)
                 {
-                    var subject = await _sadDirectorService.GetSubjectByIdAsync(program.SubjectId);
-                    var subjectInfoList = await _sadDirectorService.GetStudyClassSubjectInfo(studyClass.Id, program.SubjectId, isRequired);
-                    var planHours = studyClass.StudentCount>=25 && subject.IsSeparated ? program.Hours * 2 : program.Hours;
-                    if (planHours > subjectInfoList.Sum(si => si.CurrentHours))
+                    var studyClassSubjectList = await _sadDirectorService.GetStudyClassExtraProgramAsync(studyClass.Id);
+                    foreach (var program in studyClassSubjectList)
                     {
-                        list.Add(new SubjectInfo
+                        var subjectInfoList = await _sadDirectorService.GetStudyClassSubjectInfo(studyClass.Id, program.ExtraSubjectId, isRequired, isExtra);
+                        var planHours =program.Hours;
+                        if (planHours > subjectInfoList.Sum(si => si.CurrentHours))
                         {
-                            SubjectId = program.SubjectId,
-                            StudyClassId = studyClass.Id,
-                            CurrentHours = planHours - subjectInfoList.Sum(si => si.CurrentHours)
-                        });
+                            list.Add(new SubjectInfo
+                            {
+                                SubjectId = program.ExtraSubjectId,
+                                StudyClassId = studyClass.Id,
+                                CurrentHours = planHours - subjectInfoList.Sum(si => si.CurrentHours)
+                            });
+                        }
                     }
-
                 }
+                else
+                {
+                    var studyClassSubjectList = await _sadDirectorService.GetStudyClassTeachingProgramAsync(studyClass.Id, isRequired);
+                    foreach (var program in studyClassSubjectList)
+                    {
+                        var subject = await _sadDirectorService.GetSubjectByIdAsync(program.SubjectId);
+                        var subjectInfoList = await _sadDirectorService.GetStudyClassSubjectInfo(studyClass.Id, program.SubjectId, isRequired);
+                        var planHours = studyClass.StudentCount>=25 && subject.IsSeparated ? program.Hours * 2 : program.Hours;
+                        if (planHours > subjectInfoList.Sum(si => si.CurrentHours))
+                        {
+                            list.Add(new SubjectInfo
+                            {
+                                SubjectId = program.SubjectId,
+                                StudyClassId = studyClass.Id,
+                                CurrentHours = planHours - subjectInfoList.Sum(si => si.CurrentHours)
+                            });
+                        }
+                    }
+                }
+                
 
                 foreach (var info in list)
                 {
@@ -703,4 +730,30 @@ public class SadDirectorModelFactory
         return model;
     }
     #endregion
+
+    public async Task<ExportTariffModel> PrepareExportTariffModelAsync(int tariffId)
+    {
+        var tariff=await _sadDirectorService.GetTariffByIdAsync(tariffId);
+        if (tariff!=null)
+        {
+            var model = new ExportTariffModel
+            {
+                TariffId = tariffId,
+                TariffName = tariff.Name,
+                TariffPeriod = tariff.Period,
+                TeachersSummaryInfo = (await PrepareTeacherSummaryModelList()).OrderBy(teacher=>teacher.TeacherName).ToList(),
+                ExtraSubjectList = await _sadDirectorService.GetExtraSubjectListAsync()
+            };
+            var vacancy = model.TeachersSummaryInfo.FirstOrDefault(t => t.TeacherName == "Вакансия");
+            if (vacancy != null)
+            {
+                model.TeachersSummaryInfo.Remove(vacancy);
+                model.TeachersSummaryInfo.Add(vacancy);
+            }
+            
+            
+            return model;
+        }
+        return new ExportTariffModel();
+    }
 }
